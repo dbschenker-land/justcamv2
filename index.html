@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DB Schenker Digital Experience</title>
+    <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
+    <style>
+        body {
+            background-color: teal;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 200px;
+            margin: 20px 0;
+        }
+
+        button {
+            width: 80%;
+            padding: 15px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: teal;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            color: black;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(5px);
+            z-index: 999;
+        }
+
+        .completed {
+            background-color: green !important;
+            color: white !important;
+        }
+
+        .quiz-question { display: none; }
+        .quiz-question.active { display: block; }
+        .answer { margin: 10px 0; padding: 10px; cursor: pointer; }
+        .correct { background-color: green !important; }
+        .wrong { background-color: red !important; }
+        #qrScanner { display: none; width: 100%; height: 300px; }
+        .radio-label { display: block; margin: 10px 0; text-align: left; }
+        .radio-label input { margin-right: 10px; }
+        .fun-fact { font-style: italic; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Popup -->
+        <div class="overlay" id="welcomeOverlay"></div>
+        <div class="popup" id="welcomePopup">
+            <h2>Welcome to DB Schenker Digital Experience</h2>
+            <h3>Scan QR codes at each station to complete activities and unlock the final ePOD signature!</h3>
+            <button onclick="closeWelcome()">Get Started</button>
+        </div>
+
+        <!-- Quiz Popup -->
+        <div class="overlay" id="quizOverlay" style="display: none"></div>
+        <div class="popup" id="quizPopup" style="display: none">
+            <div class="quiz-question active" id="q1">
+                <h3>Question 1: What is the capital of France?</h3>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="Paris" onclick="checkAnswer(this, true)"> Paris
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="London" onclick="checkAnswer(this, false)"> London
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q1" value="Berlin" onclick="checkAnswer(this, false)"> Berlin
+                </label>
+                <p class="fun-fact" style="display: none;">Fun Fact: Paris is known as the City of Light!</p>
+                <button id="next1" onclick="nextQuestion(2)">Next</button>
+            </div>
+            <div class="quiz-question" id="q2">
+                <h3>Question 2: What is the largest planet in our solar system?</h3>
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="Earth" onclick="checkAnswer(this, false)"> Earth
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="Jupiter" onclick="checkAnswer(this, true)"> Jupiter
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q2" value="Mars" onclick="checkAnswer(this, false)"> Mars
+                </label>
+                <p class="fun-fact" style="display: none;">Fun Fact: Jupiter is so large that it could fit all other planets inside it!</p>
+                <button id="next2" onclick="nextQuestion(3)">Next</button>
+            </div>
+            <div class="quiz-question" id="q3">
+                <h3>Question 3: What is the chemical symbol for water?</h3>
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="H2O" onclick="checkAnswer(this, true)"> H2O
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="CO2" onclick="checkAnswer(this, false)"> CO2
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="q3" value="O2" onclick="checkAnswer(this, false)"> O2
+                </label>
+                <p class="fun-fact" style="display: none;">Fun Fact: Water covers about 71% of the Earth's surface!</p>
+                <button id="next3" onclick="finishQuiz()">Finish Quiz</button>
+            </div>
+        </div>
+
+        <!-- QR Scanner -->
+        <div class="overlay" id="qrOverlay" style="display: none"></div>
+        <div class="popup" id="qrPopup" style="display: none">
+            <video id="qrScanner"></video>
+            <button onclick="stopScanner()">Cancel</button>
+        </div>
+
+        <!-- ePOD Camera -->
+        <div class="overlay" id="cameraOverlay" style="display: none"></div>
+        <div class="popup" id="cameraPopup" style="display: none">
+            <video id="cameraPreview" autoplay></video>
+            <button onclick="captureImage()">Capture</button>
+            <button onclick="closeCamera()">Cancel</button>
+        </div>
+
+        <!-- Main Content -->
+        <img src="logo.png" alt="DB Schenker" class="logo">
+        <h1>Landbridge Event</h1>
+        
+        <!-- Buttons -->
+        <button id="pickup" disabled class="completed">Pickup - Completed</button>
+        <button id="customClearance" onclick="startQuiz()">Custom Clearance</button>
+        <button id="crossBorder" onclick="startScanner('crossBorder')">Cross Border</button>
+        <button id="transit" onclick="startScanner('transit')">Transit</button>
+        <button id="delivered" onclick="startScanner('delivered')">Delivered</button>
+        <button id="epod" onclick="openCamera()">ePOD</button>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let qrScanner = null;
+        let cameraStream = null;
+
+        function closeWelcome() {
+            document.getElementById('welcomePopup').style.display = 'none';
+            document.getElementById('welcomeOverlay').style.display = 'none';
+        }
+
+        function startQuiz() {
+            currentQuestion = 1;
+            document.getElementById('quizPopup').style.display = 'block';
+            document.getElementById('quizOverlay').style.display = 'block';
+            showQuestion(currentQuestion);
+        }
+
+        function showQuestion(qNumber) {
+            document.querySelectorAll('.quiz-question').forEach(q => q.style.display = 'none');
+            document.getElementById(`q${qNumber}`).style.display = 'block';
+        }
+
+        function checkAnswer(element, isCorrect) {
+            const labels = element.parentElement.parentElement.querySelectorAll('.radio-label');
+            labels.forEach(label => {
+                label.style.pointerEvents = 'none';
+                if (label.querySelector('input').value === element.value) {
+                    label.style.backgroundColor = isCorrect ? 'green' : 'red';
+                }
+            });
+            document.querySelector(`#q${currentQuestion} .fun-fact`).style.display = 'block';
+        }
+
+        function nextQuestion(qNumber) {
+            currentQuestion = qNumber;
+            showQuestion(currentQuestion);
+        }
+
+        function finishQuiz() {
+            document.getElementById('quizPopup').style.display = 'none';
+            document.getElementById('quizOverlay').style.display = 'none';
+            document.getElementById('customClearance').classList.add('completed');
+            document.getElementById('customClearance').textContent = 'Custom Clearance - Completed';
+            document.getElementById('customClearance').disabled = true;
+            saveState('customClearance');
+        }
+
+        async function startScanner(buttonId) {
+            const video = document.getElementById('qrScanner');
+            document.getElementById('qrPopup').style.display = 'block';
+            document.getElementById('qrOverlay').style.display = 'block';
+            
+            qrScanner = new QrScanner(
+                video,
+                result => {
+                    handleScanSuccess(buttonId, result);
+                },
+                { highlightScanRegion: true }
+            );
+            await qrScanner.start();
+        }
+
+        function handleScanSuccess(buttonId) {
+            const btn = document.getElementById(buttonId);
+            btn.classList.add('completed');
+            btn.textContent = `${buttonId} - Completed`;
+            btn.disabled = true;
+            saveState(buttonId);
+            stopScanner();
+        }
+
+        function stopScanner() {
+            if (qrScanner) {
+                qrScanner.stop();
+                qrScanner = null;
+            }
+            document.getElementById('qrPopup').style.display = 'none';
+            document.getElementById('qrOverlay').style.display = 'none';
+        }
+
+        async function openCamera() {
+            try {
+                const video = document.getElementById('cameraPreview');
+                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = cameraStream;
+                document.getElementById('cameraPopup').style.display = 'block';
+                document.getElementById('cameraOverlay').style.display = 'block';
+            } catch (error) {
+                alert('Error accessing camera: ' + error.message);
+            }
+        }
+
+        function captureImage() {
+            const video = document.getElementById('cameraPreview');
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const image = canvas.toDataURL('image/png');
+            closeCamera();
+            // Handle the captured image (e.g., display in a popup)
+        }
+
+        function closeCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            document.getElementById('cameraPopup').style.display = 'none';
+            document.getElementById('cameraOverlay').style.display = 'none';
+        }
+
+        function saveState(buttonId) {
+            const state = JSON.parse(localStorage.getItem('appState')) || {};
+            state[buttonId] = Date.now();
+            localStorage.setItem('appState', JSON.stringify(state));
+        }
+
+        window.onload = () => {
+            const state = JSON.parse(localStorage.getItem('appState')) || {};
+            Object.keys(state).forEach(buttonId => {
+                const btn = document.getElementById(buttonId);
+                if (btn) {
+                    btn.classList.add('completed');
+                    btn.textContent = `${buttonId} - Completed`;
+                    btn.disabled = true;
+                }
+            });
+        };
+    </script>
+</body>
+</html>
