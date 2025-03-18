@@ -312,38 +312,53 @@
     let capturedImageUrl = "";
     let epodStream = null;
 
-    // QR Code Handling using html5-qrcode library
-    async function startScanner(buttonId) {
-      document.getElementById('qrPopup').style.display = 'block';
-      document.getElementById('qrOverlay').style.display = 'block';
+// QR Code Handling using html5-qrcode library
+async function startScanner(buttonId) {
+    document.getElementById('qrPopup').style.display = 'block';
+    document.getElementById('qrOverlay').style.display = 'block';
 
-      html5QrCode = new Html5Qrcode("qrScanner");
-      const config = { fps: 10, qrbox: 250 };
+    html5QrCode = new Html5Qrcode("qrScanner");
+    const config = { fps: 10, qrbox: 250 };
 
-      try {
+    try {
         const cameras = await Html5Qrcode.getCameras();
         if (cameras && cameras.length) {
-          const cameraId = cameras[0].id;
-          await html5QrCode.start(
-            cameraId,
-            config,
-            (decodedText, decodedResult) => {
-              const isValid = decodedText === validQRCodes[buttonId];
-              document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
-              document.getElementById('qrResult').className = isValid ? '' : 'no-match';
-              if (isValid) {
-                handleScanSuccess(buttonId);
-                stopScanner(); // Stop scanning after a valid scan
-              }
+            // Find back camera (environment-facing)
+            let cameraId = cameras[0].id;
+            for (const cam of cameras) {
+                if (cam.label.toLowerCase().includes("back") || 
+                    cam.label.toLowerCase().includes("environment")) {
+                    cameraId = cam.id;
+                    break;
+                }
             }
-          );
+
+            await html5QrCode.start(
+                cameraId,
+                config,
+                (decodedText, decodedResult) => {
+                    const isValid = decodedText === validQRCodes[buttonId];
+                    document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
+                    document.getElementById('qrResult').className = isValid ? '' : 'no-match';
+                    if (isValid) {
+                        handleScanSuccess(buttonId);
+                        stopScanner();
+                    }
+                },
+                (errorMessage) => {
+                    // Optional: Add error logging here
+                }
+            );
         } else {
-          console.error("No cameras found.");
+            console.error("No cameras found.");
+            alert("No cameras available. Please check your device camera.");
         }
-      } catch (err) {
+    } catch (err) {
         console.error(err);
-      }
+        alert("Camera access error: " + err.message);
+        stopScanner();
     }
+}
 
     function stopScanner() {
       if (html5QrCode) {
