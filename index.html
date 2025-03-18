@@ -241,10 +241,10 @@
     <!-- Electronic Proof of Delivery Popup -->
     <div class="overlay" id="epodDetailsOverlay" style="display: none"></div>
     <div class="popup" id="epodDetailsPopup" style="display: none">
-      <h3>Electronic Proof of Delivery</h3>
+      <h2>Electronic Proof of Delivery</h2>
       <!-- Reduced logo size -->
       <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
-      <h2>DB Schenker | landbridge</h2>
+      <h3>DB Schenker | landbridge</h3>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
 
@@ -308,7 +308,7 @@
       transit: '234567',
       delivered: '345678'
     };
-    const storageExpiration = 60000; // 1 minute
+    const storageExpiration = 300000; // 5 minutes
 
     let currentQuestionIndex = 0;
     const quizQuestions = [
