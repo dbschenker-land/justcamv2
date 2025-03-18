@@ -189,15 +189,16 @@
     </div>
 
     <!-- QR Scanner Popup -->
-    <div class="overlay" id="qrOverlay" style="display: none"></div>
-    <div class="popup" id="qrPopup" style="display: none">
-      <!-- Using a div container for html5-qrcode -->
-      <div id="qrScanner"></div>
-      <p id="qrResult"></p>
-      <div class="qr-popup-controls">
-        <button onclick="stopScanner()">Cancel</button>
-      </div>
-    </div>
+<div class="overlay" id="qrOverlay" style="display: none"></div>
+<div class="popup" id="qrPopup" style="display: none">
+  <div id="qrScanner"></div>
+  <p id="qrResult"></p>
+  <div class="qr-popup-controls">
+    <button onclick="stopScanner()">Close</button>
+    <!-- Added manual entry button -->
+    <button onclick="handleManualEntry()">Enter Code Manually</button>
+  </div>
+</div>
 
     <!-- ePOD Camera Popup (Direct Camera Capture) -->
     <div class="overlay" id="epodOverlay" style="display: none"></div>
@@ -313,7 +314,13 @@
     let epodStream = null;
 
 // QR Code Handling using html5-qrcode library
+      // Modified QR Scanner function with iOS-specific fixes
+// Add global variable to track current button ID
+let currentButtonId = null;
+
+// Modified startScanner function to track button ID
 async function startScanner(buttonId) {
+  currentButtonId = buttonId; // Store the current button ID
     document.getElementById('qrPopup').style.display = 'block';
     document.getElementById('qrOverlay').style.display = 'block';
 
@@ -360,18 +367,40 @@ async function startScanner(buttonId) {
     }
 }
 
-    function stopScanner() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          html5QrCode.clear();
-          html5QrCode = null;
-        }).catch(err => {
-          console.error(err);
-        });
-      }
-      document.getElementById('qrPopup').style.display = 'none';
-      document.getElementById('qrOverlay').style.display = 'none';
-    }
+// New manual entry handler
+function handleManualEntry() {
+  stopScanner(false); // Stop scanner but keep popup open
+  const manualCode = prompt("Please enter the QR code manually:");
+  const isValid = manualCode === validQRCodes[currentButtonId];
+  
+  const resultElement = document.getElementById('qrResult');
+  if (isValid) {
+    resultElement.textContent = 'Match!';
+    resultElement.className = '';
+    handleScanSuccess(currentButtonId);
+    stopScanner(); // Close popup on success
+  } else {
+    resultElement.textContent = 'No Match!';
+    resultElement.className = 'no-match';
+    // Optional: Restart scanner here if desired
+  }
+}
+
+// Modified stopScanner to accept optional parameter
+function stopScanner(closePopup = true) {
+  if (html5QrCode) {
+    html5QrCode.stop().then(() => {
+      html5QrCode.clear();
+      html5QrCode = null;
+    }).catch(err => {
+      console.error(err);
+    });
+  }
+  if (closePopup) {
+    document.getElementById('qrPopup').style.display = 'none';
+    document.getElementById('qrOverlay').style.display = 'none';
+  }
+}
 
     function handleScanSuccess(buttonId) {
       const btn = document.getElementById(buttonId);
