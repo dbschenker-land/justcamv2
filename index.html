@@ -47,6 +47,7 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+    /* When a button is completed, just apply green background and disable it */
     .completed {
       background-color: green !important;
       color: #fff !important;
@@ -213,7 +214,8 @@
     <div class="overlay" id="epodDetailsOverlay" style="display: none"></div>
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h3>Electronic Proof of Delivery</h3>
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo">
+      <!-- Reduced logo size -->
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 50px;">
       <h2>DB Schenker | landbridge</h2>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
@@ -227,11 +229,11 @@
     </div>
 
     <!-- Main Content -->
-    <img src="db-schenker-logo-main.png" alt="DB Schenker main" class="logo">
+    <img src="db-schenker-logo-main" alt="DB Schenker main" class="logo">
     <h1>Landbridge Event</h1>
 
     <!-- Navigation Buttons -->
-    <button id="pickup" disabled class="completed">Pickup - Completed</button>
+    <button id="pickup" class="completed" disabled>Pickup</button>
     <button id="customClearance" onclick="startQuiz()">Custom Clearance</button>
     <button id="crossBorder" onclick="startScanner('crossBorder')">Cross Border</button>
     <button id="transit" onclick="startScanner('transit')">Transit</button>
@@ -240,42 +242,49 @@
   </div>
 
   <script>
-    // Debugging: Update closeWelcome() to log and alert when Get Started is clicked
+    // closeWelcome: Remove debug alert; just hide welcome elements.
     function closeWelcome() {
       console.log("Get Started button clicked.");
-      alert("Get Started button clicked.");  // Debug alert
       document.getElementById('welcomePopup').style.display = 'none';
       document.getElementById('welcomeOverlay').style.display = 'none';
     }
 
+    // When a navigation button is clicked (except for quiz and ePOD), simply add the completed style and disable.
+    function handleButtonClick(buttonId) {
+      const btn = document.getElementById(buttonId);
+      btn.classList.add('completed');
+      btn.disabled = true;
+      saveState(buttonId);
+    }
+
     // Configuration
     const validQRCodes = {
-      crossBorder: '111111',
-      transit: '222222',
-      delivered: '333333'
+      crossBorder: '123456',
+      transit: '234567',
+      delivered: '345678'
     };
     const storageExpiration = 60000; // 1 minute
 
     let currentQuestionIndex = 0;
     const quizQuestions = [
       {
-        question: "What is the approximate distance of the Landbridge route we are simulating?",
-        options: ["5,000 km", "10,000 km", "15,000 km"],
-        correctAnswer: "10,000 km",
-        funFact: "The actual Eurasian Land Bridge spans over 12,000 km!"
-      },
-      {
-        question: "Which mode of transport is primarily involved in a Landbridge operation?",
-        options: ["Air Freight", "Sea Freight", "Road & Rail"],
-        correctAnswer: "Road & Rail",
-        funFact: "Double-stack rail transport is a common feature on some Landbridge routes, increasing efficiency."
-      },
-      {
-        question: "What is a key benefit of using a Landbridge for cargo transport?",
-        options: ["Highest Speed", "Lowest Cost", "Flexibility & Security"],
-        correctAnswer: "Flexibility & Security",
-        funFact: "Landbridges can offer a good compromise between the speed of air freight and the cost of sea freight."
-      }
+                question: "Which of the following is a MUST-HAVE document for customs clearance?", 
+                options: ["Your passport","Commercial invoice","Hotel reservation","Travel guidebook"], 
+                correctAnswer: "Commercial invoice", // Correct answer
+                funFact: "While a travel guidebook might help you explore, customs officers are more interested in the value of your goods!" // Fun fact
+            },
+            { 
+                question: "If your shipment is worth over $5,000, will you need to pay customs duties?", 
+                options: ["Yes", "No"], 
+                correctAnswer: "Yes", // Correct answer
+                funFact: "Think of customs duties as a ‘toll fee’—the higher the value, the higher the cost!" // Fun fact
+            },
+            { 
+                question: "Which of the following items is most likely to be held by customs?", 
+                options: ["Electronics", "Fresh fruits", "Clothing", "Books"], 
+                correctAnswer: "Fresh fruits", // Correct answer
+                funFact: "Fresh fruits might carry pests, and customs officers aren’t fans of uninvited ‘guests’!" // Fun fact
+            }
     ];
 
     // Global reference for html5-qrcode scanner and captured image
@@ -294,7 +303,14 @@
       try {
         const cameras = await Html5Qrcode.getCameras();
         if (cameras && cameras.length) {
-          const cameraId = cameras[0].id;
+          // Prefer back camera if available
+          let cameraId = cameras[0].id;
+          for (let cam of cameras) {
+            if (cam.label.toLowerCase().includes("back")) {
+              cameraId = cam.id;
+              break;
+            }
+          }
           await html5QrCode.start(
             cameraId,
             config,
@@ -303,7 +319,10 @@
               document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
               document.getElementById('qrResult').className = isValid ? '' : 'no-match';
               if (isValid) {
-                handleScanSuccess(buttonId);
+                const btn = document.getElementById(buttonId);
+                btn.classList.add('completed');
+                btn.disabled = true;
+                saveState(buttonId);
                 stopScanner(); // Stop scanning after a valid scan
               }
             }
@@ -329,14 +348,6 @@
       document.getElementById('qrOverlay').style.display = 'none';
     }
 
-    function handleScanSuccess(buttonId) {
-      const btn = document.getElementById(buttonId);
-      btn.classList.add('completed');
-      btn.textContent = `${buttonId} - Completed`;
-      btn.disabled = true;
-      saveState(buttonId);
-    }
-
     // Local Storage Management
     function saveState(buttonId) {
       const state = JSON.parse(localStorage.getItem('appState')) || {};
@@ -353,7 +364,6 @@
           const btn = document.getElementById(key);
           if (btn) {
             btn.classList.remove('completed');
-            btn.textContent = key;
             btn.disabled = false;
           }
         }
@@ -369,7 +379,6 @@
         const btn = document.getElementById(buttonId);
         if (btn) {
           btn.classList.add('completed');
-          btn.textContent = `${buttonId} - Completed`;
           btn.disabled = true;
         }
       });
@@ -435,9 +444,9 @@
       document.getElementById('epodDetailsOverlay').style.display = 'none';
       document.getElementById('thankYouOverlay').style.display = 'block';
       document.getElementById('thankYouPopup').style.display = 'block';
-      document.getElementById('epod').classList.add('completed');
-      document.getElementById('epod').textContent = 'ePOD - Completed';
-      document.getElementById('epod').disabled = true;
+      const epodBtn = document.getElementById('epod');
+      epodBtn.classList.add('completed');
+      epodBtn.disabled = true;
       saveState('epod');
     }
 
@@ -493,10 +502,9 @@
       } else {
         document.getElementById('quizPopup').style.display = 'none';
         document.getElementById('quizOverlay').style.display = 'none';
-        const clearanceButton = document.getElementById('customClearance');
-        clearanceButton.classList.add('completed');
-        clearanceButton.textContent = 'Custom Clearance - Completed';
-        clearanceButton.disabled = true;
+        const clearanceBtn = document.getElementById('customClearance');
+        clearanceBtn.classList.add('completed');
+        clearanceBtn.disabled = true;
         saveState('customClearance');
       }
     }
