@@ -43,7 +43,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: teal;
+            background-color: white;
             padding: 20px;
             border-radius: 10px;
             z-index: 1000;
@@ -51,6 +51,10 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
+        }
+
+        .popup h2, .popup h3 {
+            color: black;
         }
 
         .overlay {
@@ -68,21 +72,55 @@
             color: white !important;
         }
 
-        .quiz-question { display: none; }
-        .quiz-question.active { display: block; }
-        .answer { margin: 10px 0; padding: 10px; cursor: pointer; }
-        .correct { background-color: green !important; }
-        .wrong { background-color: red !important; }
-        #qrScanner, #cameraPreview { width: 100%; height: 300px; }
-        .radio-label { display: block; margin: 10px 0; text-align: left; }
+        .quiz-question { margin-bottom: 20px; text-align: left; }
+        .quiz-question h3 { text-align: center; margin-bottom: 10px; font-size: 20px; }
+        .radio-label { display: block; margin: 5px 0; font-size: 18px; }
         .radio-label input { margin-right: 10px; }
-        .fun-fact { font-style: italic; margin-top: 10px; }
-        .captured-image { width: 100%; border-radius: 10px; }
-        .quiz-question h3 { font-size: 20px; text-align: center; }
-        .quiz-question label { font-size: 18px; }
-        .quiz-question button { font-size: 18px; }
+        #qrScanner, #cameraPreview { width: 100%; height: 300px; display: none; }
         #qrResult { font-size: 18px; font-weight: bold; }
         #qrResult.no-match { color: red; }
+        .popup-header {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .popup-header img {
+            max-width: 150px;
+            height: auto;
+        }
+        .qr-popup-controls {
+            margin-top: 15px;
+        }
+        #quiz-content {
+            margin-bottom: 15px;
+        }
+        .correct-answer {
+            color: green !important;
+            font-weight: bold;
+        }
+        .wrong-answer {
+            color: red !important;
+            text-decoration: line-through;
+        }
+        .fun-fact {
+            font-style: italic;
+            margin-top: 10px;
+            text-align: center;
+            color: #555;
+        }
+        #next-question-btn {
+            margin-top: 15px;
+        }
+        #capturedImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        #epodDetails {
+            text-align: left;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -90,6 +128,9 @@
         <!-- Welcome Popup -->
         <div class="overlay" id="welcomeOverlay"></div>
         <div class="popup" id="welcomePopup">
+            <div class="popup-header">
+                <img src="https://www.dbschenker.com/resource/blob/100588/74c897479b792591361172918209a592/data/logo-data.png" alt="DB Schenker Logo">
+            </div>
             <h2>Welcome to DB Schenker Digital Experience</h2>
             <h3>Scan QR codes at each station to complete activities and unlock the final ePOD signature!</h3>
             <button onclick="closeWelcome()">Get Started</button>
@@ -98,48 +139,11 @@
         <!-- Quiz Popup -->
         <div class="overlay" id="quizOverlay" style="display: none"></div>
         <div class="popup" id="quizPopup" style="display: none">
-            <div class="quiz-question active" id="q1">
-                <h3>Question 1: What is the capital of France?</h3>
-                <label class="radio-label">
-                    <input type="radio" name="q1" value="Paris" onclick="checkAnswer(this, true)"> Paris
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q1" value="London" onclick="checkAnswer(this, false)"> London
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q1" value="Berlin" onclick="checkAnswer(this, false)"> Berlin
-                </label>
-                <p class="fun-fact" style="display: none;">Fun Fact: Paris is known as the City of Light!</p>
-                <button id="next1" onclick="nextQuestion(2)">Next</button>
+            <div class="popup-header">
+                <h3>Customs Clearance Quiz</h3>
             </div>
-            <div class="quiz-question" id="q2">
-                <h3>Question 2: What is the largest planet in our solar system?</h3>
-                <label class="radio-label">
-                    <input type="radio" name="q2" value="Earth" onclick="checkAnswer(this, false)"> Earth
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q2" value="Jupiter" onclick="checkAnswer(this, true)"> Jupiter
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q2" value="Mars" onclick="checkAnswer(this, false)"> Mars
-                </label>
-                <p class="fun-fact" style="display: none;">Fun Fact: Jupiter is so large that it could fit all other planets inside it!</p>
-                <button id="next2" onclick="nextQuestion(3)">Next</button>
-            </div>
-            <div class="quiz-question" id="q3">
-                <h3>Question 3: What is the chemical symbol for water?</h3>
-                <label class="radio-label">
-                    <input type="radio" name="q3" value="H2O" onclick="checkAnswer(this, true)"> H2O
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q3" value="CO2" onclick="checkAnswer(this, false)"> CO2
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="q3" value="O2" onclick="checkAnswer(this, false)"> O2
-                </label>
-                <p class="fun-fact" style="display: none;">Fun Fact: Water covers about 71% of the Earth's surface!</p>
-                <button id="next3" onclick="finishQuiz()">Finish Quiz</button>
-            </div>
+            <div id="quiz-content"></div>
+            <button id="next-question-btn" onclick="submitQuiz()">Submit Answer</button>
         </div>
 
         <!-- QR Scanner -->
@@ -147,101 +151,107 @@
         <div class="popup" id="qrPopup" style="display: none">
             <video id="qrScanner"></video>
             <p id="qrResult"></p>
-            <button onclick="stopScanner()">Cancel</button>
+            <div class="qr-popup-controls">
+                <button onclick="stopScanner()">Cancel</button>
+            </div>
+        </div>
+
+        <!-- ePOD Camera -->
+        <div class="overlay" id="epodOverlay" style="display: none"></div>
+        <div class="popup" id="epodCameraPopup" style="display: none">
+            <h3>Capture Delivery Image</h3>
+            <input type="file" id="cameraInput" accept="image/*" capture="environment">
+            <button onclick="closeEpodCameraPopup()">Cancel</button>
         </div>
 
         <!-- Captured Image Popup -->
-        <div class="overlay" id="imageOverlay" style="display: none"></div>
-        <div class="popup" id="imagePopup" style="display: none">
-            <img id="capturedImage" class="captured-image" src="#" alt="Captured Image">
-            <button onclick="showEPODPopup()">Continue</button>
+        <div class="overlay" id="epodImageOverlay" style="display: none"></div>
+        <div class="popup" id="epodImagePopup" style="display: none">
+            <h3>Captured Image</h3>
+            <img id="capturedImage" src="#" alt="Captured Image">
+            <button onclick="showEpodDetailsPopup()">Continue</button>
+            <button onclick="closeEpodImagePopup()">Retake</button>
         </div>
 
         <!-- Electronic Proof of Delivery Popup -->
-        <div class="overlay" id="epodOverlay" style="display: none"></div>
-        <div class="popup" id="epodPopup" style="display: none">
-            <img src="logo.png" alt="DB Schenker" class="logo">
-            <h2>Electronic Proof of Delivery</h2>
-            <p>DB Schenker | Landbridge</p>
+        <div class="overlay" id="epodDetailsOverlay" style="display: none"></div>
+        <div class="popup" id="epodDetailsPopup" style="display: none">
+            <h3>Electronic Proof of Delivery</h3>
+            <div id="epodDetails">
+                <p>Delivery ID: #12345</p>
+                <p>Recipient: John Doe</p>
+                <p>Date: 2025-03-18</p>
+                <p>Time: 16:05 SGT</p>
+                <p>Please confirm the delivery details.</p>
+            </div>
             <button onclick="showThankYouPopup()">Finish Experience</button>
         </div>
 
         <!-- Thank You Popup -->
         <div class="overlay" id="thankYouOverlay" style="display: none"></div>
         <div class="popup" id="thankYouPopup" style="display: none">
-            <h2>Thank You</h2>
-            <p>We hope you enjoyed this digital experience. Thank you for visiting us.</p>
-            <button onclick="closeThankYou()">Close</button>
+            <h2>Thank You!</h2>
+            <p>Thank you for participating in the DB Schenker Digital Experience.</p>
+            <button onclick="closeThankYouPopup()">Close</button>
         </div>
 
         <!-- Main Content -->
-        <img src="logo.png" alt="DB Schenker" class="logo">
+        <img src="https://www.dbschenker.com/resource/blob/100588/74c897479b792591361172918209a592/data/logo-data.png" alt="DB Schenker" class="logo">
         <h1>Landbridge Event</h1>
-        
+
         <!-- Buttons -->
         <button id="pickup" disabled class="completed">Pickup - Completed</button>
         <button id="customClearance" onclick="startQuiz()">Custom Clearance</button>
         <button id="crossBorder" onclick="startScanner('crossBorder')">Cross Border</button>
         <button id="transit" onclick="startScanner('transit')">Transit</button>
         <button id="delivered" onclick="startScanner('delivered')">Delivered</button>
-        <button id="epod" onclick="openCamera()">ePOD</button>
+        <button id="epod" onclick="initiateEpod()">ePOD</button>
     </div>
 
     <script>
-        let currentQuestion = 1;
+        // Configuration
+        const validQRCodes = {
+            crossBorder: '111111',
+            transit: '222222',
+            delivered: '333333'
+        };
+        const storageExpiration = 60000; // 1 minute
+
+        let currentQuestionIndex = 0;
+        const quizQuestions = [
+            {
+                question: "What is the approximate distance of the Landbridge route we are simulating?",
+                options: ["5,000 km", "10,000 km", "15,000 km"],
+                correctAnswer: "10,000 km",
+                funFact: "The actual Eurasian Land Bridge spans over 12,000 km!"
+            },
+            {
+                question: "Which mode of transport is primarily involved in a Landbridge operation?",
+                options: ["Air Freight", "Sea Freight", "Road & Rail"],
+                correctAnswer: "Road & Rail",
+                funFact: "Double-stack rail transport is a common feature on some Landbridge routes, increasing efficiency."
+            },
+            {
+                question: "What is a key benefit of using a Landbridge for cargo transport?",
+                options: ["Highest Speed", "Lowest Cost", "Flexibility & Security"],
+                correctAnswer: "Flexibility & Security",
+                funFact: "Landbridges can offer a good compromise between the speed of air freight and the cost of sea freight."
+            }
+        ];
+
         let qrScanner = null;
+        let capturedImageUrl = "";
 
-        function closeWelcome() {
-            document.getElementById('welcomePopup').style.display = 'none';
-            document.getElementById('welcomeOverlay').style.display = 'none';
-        }
-
-        function startQuiz() {
-            currentQuestion = 1;
-            document.getElementById('quizPopup').style.display = 'block';
-            document.getElementById('quizOverlay').style.display = 'block';
-            showQuestion(currentQuestion);
-        }
-
-        function showQuestion(qNumber) {
-            document.querySelectorAll('.quiz-question').forEach(q => q.style.display = 'none');
-            document.getElementById(`q${qNumber}`).style.display = 'block';
-        }
-
-        function checkAnswer(element, isCorrect) {
-            const labels = element.parentElement.parentElement.querySelectorAll('.radio-label');
-            labels.forEach(label => {
-                label.style.pointerEvents = 'none';
-                if (label.querySelector('input').value === element.value) {
-                    label.style.backgroundColor = isCorrect ? 'green' : 'red';
-                }
-            });
-            document.querySelector(`#q${currentQuestion} .fun-fact`).style.display = 'block';
-        }
-
-        function nextQuestion(qNumber) {
-            currentQuestion = qNumber;
-            showQuestion(currentQuestion);
-        }
-
-        function finishQuiz() {
-            document.getElementById('quizPopup').style.display = 'none';
-            document.getElementById('quizOverlay').style.display = 'none';
-            document.getElementById('customClearance').classList.add('completed');
-            document.getElementById('customClearance').textContent = 'Custom Clearance - Completed';
-            document.getElementById('customClearance').disabled = true;
-            saveState('customClearance');
-        }
-
+        // QR Code Handling
         async function startScanner(buttonId) {
             const video = document.getElementById('qrScanner');
             document.getElementById('qrPopup').style.display = 'block';
             document.getElementById('qrOverlay').style.display = 'block';
-            
+
             qrScanner = new QrScanner(
                 video,
                 result => {
-                    const isValid = result.data === "123456"; // Only accept 123456 as valid QR
+                    const isValid = result.data === validQRCodes[buttonId];
                     document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
                     document.getElementById('qrResult').className = isValid ? '' : 'no-match';
                     if (isValid) {
@@ -253,15 +263,6 @@
             await qrScanner.start();
         }
 
-        function handleScanSuccess(buttonId) {
-            const btn = document.getElementById(buttonId);
-            btn.classList.add('completed');
-            btn.textContent = `${buttonId} - Completed`;
-            btn.disabled = true;
-            saveState(buttonId);
-            stopScanner();
-        }
-
         function stopScanner() {
             if (qrScanner) {
                 qrScanner.stop();
@@ -271,54 +272,42 @@
             document.getElementById('qrOverlay').style.display = 'none';
         }
 
-        function openCamera() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.capture = 'environment';
-            input.accept = 'image/*';
-            input.onchange = e => {
-                const file = e.target.files[0];
-                const reader = new FileReader();
-                reader.onload = () => {
-                    document.getElementById('capturedImage').src = reader.result;
-                    document.getElementById('imagePopup').style.display = 'block';
-                    document.getElementById('imageOverlay').style.display = 'block';
-                    document.getElementById('epod').classList.add('completed');
-                    document.getElementById('epod').textContent = 'ePOD - Completed';
-                    document.getElementById('epod').disabled = true;
-                    saveState('epod');
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
+        function handleScanSuccess(buttonId) {
+            const btn = document.getElementById(buttonId);
+            btn.classList.add('completed');
+            btn.textContent = `${buttonId} - Completed`;
+            btn.disabled = true;
+            saveState(buttonId);
+            stopScanner();
         }
 
-        function showEPODPopup() {
-            document.getElementById('imagePopup').style.display = 'none';
-            document.getElementById('imageOverlay').style.display = 'none';
-            document.getElementById('epodPopup').style.display = 'block';
-            document.getElementById('epodOverlay').style.display = 'block';
-        }
-
-        function showThankYouPopup() {
-            document.getElementById('epodPopup').style.display = 'none';
-            document.getElementById('epodOverlay').style.display = 'none';
-            document.getElementById('thankYouPopup').style.display = 'block';
-            document.getElementById('thankYouOverlay').style.display = 'block';
-        }
-
-        function closeThankYou() {
-            document.getElementById('thankYouPopup').style.display = 'none';
-            document.getElementById('thankYouOverlay').style.display = 'none';
-        }
-
+        // Local Storage Management
         function saveState(buttonId) {
             const state = JSON.parse(localStorage.getItem('appState')) || {};
             state[buttonId] = Date.now();
             localStorage.setItem('appState', JSON.stringify(state));
         }
 
+        function checkState() {
+            const state = JSON.parse(localStorage.getItem('appState')) || {};
+            const now = Date.now();
+            for (const [key, timestamp] of Object.entries(state)) {
+                if (now - timestamp > storageExpiration) {
+                    delete state[key];
+                    const btn = document.getElementById(key);
+                    if (btn) {
+                        btn.classList.remove('completed');
+                        btn.textContent = key;
+                        btn.disabled = false;
+                    }
+                }
+            }
+            localStorage.setItem('appState', JSON.stringify(state));
+        }
+
+        // Initialize
         window.onload = () => {
+            checkState();
             const state = JSON.parse(localStorage.getItem('appState')) || {};
             Object.keys(state).forEach(buttonId => {
                 const btn = document.getElementById(buttonId);
@@ -329,6 +318,119 @@
                 }
             });
         };
+
+        // ePOD Camera Handling
+        function initiateEpod() {
+            document.getElementById('epodOverlay').style.display = 'block';
+            document.getElementById('epodCameraPopup').style.display = 'block';
+            const cameraInput = document.getElementById('cameraInput');
+            cameraInput.addEventListener('change', handleImageCapture);
+        }
+
+        // Welcome Popup Functions (Same as before)
+        function closeWelcome() {
+            document.getElementById('welcomePopup').style.display = 'none';
+            document.getElementById('welcomeOverlay').style.display = 'none';
+        }
+      
+        function closeEpodCameraPopup() {
+            document.getElementById('epodCameraPopup').style.display = 'none';
+            document.getElementById('epodOverlay').style.display = 'none';
+        }
+
+        function handleImageCapture(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    capturedImageUrl = e.target.result;
+                    document.getElementById('capturedImage').src = capturedImageUrl;
+                    closeEpodCameraPopup();
+                    document.getElementById('epodImageOverlay').style.display = 'block';
+                    document.getElementById('epodImagePopup').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function closeEpodImagePopup() {
+            document.getElementById('epodImagePopup').style.display = 'none';
+            document.getElementById('epodImageOverlay').style.display = 'none';
+            initiateEpod(); // Reopen camera for retake
+        }
+
+        function showEpodDetailsPopup() {
+            document.getElementById('epodImagePopup').style.display = 'none';
+            document.getElementById('epodImageOverlay').style.display = 'none';
+            document.getElementById('epodDetailsOverlay').style.display = 'block';
+            document.getElementById('epodDetailsPopup').style.display = 'block';
+        }
+
+        function showThankYouPopup() {
+            document.getElementById('epodDetailsPopup').style.display = 'none';
+            document.getElementById('epodDetailsOverlay').style.display = 'none';
+            document.getElementById('thankYouOverlay').style.display = 'block';
+            document.getElementById('thankYouPopup').style.display = 'block';
+            document.getElementById('epod').classList.add('completed');
+            document.getElementById('epod').textContent = 'ePOD - Completed';
+            document.getElementById('epod').disabled = true;
+            saveState('epod');
+        }
+
+        function closeThankYouPopup() {
+            document.getElementById('thankYouPopup').style.display = 'none';
+            document.getElementById('thankYouOverlay').style.display = 'none';
+        }
+
+        // Quiz Functionality
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            document.getElementById('quizOverlay').style.display = 'block';
+            document.getElementById('quizPopup').style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+            document.getElementById('quiz-content').innerHTML = `
+                <h3>${question.question}</h3>
+                ${question.options.map((option, index) => `
+                    <label class="radio-label">
+                        <input type="radio" name="quiz" value="${option}"> ${option}
+                    </label>
+                `).join('')}
+                <p class="fun-fact" style="display: none;">${question.funFact}</p>
+            `;
+        }
+
+        function submitQuiz() {
+            const selectedAnswer = document.querySelector('input[name="quiz"]:checked');
+            if (selectedAnswer) {
+                const question = quizQuestions[currentQuestionIndex];
+                const isCorrect = selectedAnswer.value === question.correctAnswer;
+                document.querySelector('.fun-fact').style.display = 'block';
+                document.querySelectorAll('.radio-label').forEach(label => {
+                    if (label.querySelector('input').value === question.correctAnswer) {
+                        label.classList.add('correct-answer');
+                    } else if (label.querySelector('input').checked) {
+                        label.classList.add('wrong-answer');
+                    }
+                });
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizQuestions.length) {
+                    displayQuestion();
+                } else {
+                    document.getElementById('quizPopup').style.display = 'none';
+                    document.getElementById('quizOverlay').style.display = 'none';
+                    document.getElementById('customClearance').classList.add('completed');
+                    document.getElementById('customClearance').textContent = 'Custom Clearance - Completed';
+                    document.getElementById('customClearance').disabled = true;
+                    saveState('customClearance');
+                }
+            } else {
+                alert("Please select an answer.");
+            }
+        }
     </script>
 </body>
 </html>
