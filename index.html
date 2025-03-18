@@ -27,9 +27,9 @@
       width: 200px;
       margin: 20px 0;
     }
-    /* Updated Buttons */
+    /* Updated Buttons (80% width) */
     button {
-      width: 50%;
+      width: 80%;
       padding: 12px;
       background-color: #fff;
       color: #333;
@@ -71,13 +71,16 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
+    /* When an option is selected, color the entire button */
     .correct-answer {
-      color: green !important;
-      font-weight: bold;
+      background-color: green !important;
+      color: #fff !important;
+      border-color: green !important;
     }
     .wrong-answer {
-      color: red !important;
-      text-decoration: line-through;
+      background-color: red !important;
+      color: #fff !important;
+      border-color: red !important;
     }
     .fun-fact {
       font-style: italic;
@@ -117,6 +120,12 @@
     #qrScanner, #cameraPreview {
       width: 100%;
       height: 300px;
+    }
+    /* Adjust scanning window height for small screens */
+    @media (max-width: 480px) {
+      #qrScanner, #cameraPreview {
+        height: 200px;
+      }
     }
     #qrResult {
       font-size: 18px;
@@ -182,11 +191,12 @@
       </div>
     </div>
 
-    <!-- ePOD Camera -->
+    <!-- ePOD Camera Popup (Direct Camera Capture) -->
     <div class="overlay" id="epodOverlay" style="display: none"></div>
     <div class="popup" id="epodCameraPopup" style="display: none">
       <h3>Capture Delivery Image</h3>
-      <input type="file" id="cameraInput" accept="image/*" capture="environment">
+      <video id="epodVideo" autoplay playsinline style="width:100%; border-radius: 8px;"></video>
+      <button onclick="captureImage()">Capture</button>
       <button onclick="closeEpodCameraPopup()">Cancel</button>
     </div>
 
@@ -220,7 +230,7 @@
     <img src="db-schenker-logo-main" alt="DB Schenker main" class="logo">
     <h1>Landbridge Event</h1>
 
-    <!-- Buttons -->
+    <!-- Navigation Buttons -->
     <button id="pickup" disabled class="completed">Pickup - Completed</button>
     <button id="customClearance" onclick="startQuiz()">Custom Clearance</button>
     <button id="crossBorder" onclick="startScanner('crossBorder')">Cross Border</button>
@@ -230,6 +240,14 @@
   </div>
 
   <script>
+    // Debugging: Update closeWelcome() to log and alert when Get Started is clicked
+    function closeWelcome() {
+      console.log("Get Started button clicked.");
+      alert("Get Started button clicked.");  // Debug alert
+      document.getElementById('welcomePopup').style.display = 'none';
+      document.getElementById('welcomeOverlay').style.display = 'none';
+    }
+
     // Configuration
     const validQRCodes = {
       crossBorder: '111111',
@@ -260,9 +278,10 @@
       }
     ];
 
-    // Global reference for html5-qrcode scanner
+    // Global reference for html5-qrcode scanner and captured image
     let html5QrCode = null;
     let capturedImageUrl = "";
+    let epodStream = null;
 
     // QR Code Handling using html5-qrcode library
     async function startScanner(buttonId) {
@@ -356,38 +375,46 @@
       });
     };
 
-    // ePOD Camera Handling
+    // ePOD Camera Handling (Direct Camera Capture)
     function initiateEpod() {
       document.getElementById('epodOverlay').style.display = 'block';
       document.getElementById('epodCameraPopup').style.display = 'block';
-      const cameraInput = document.getElementById('cameraInput');
-      cameraInput.addEventListener('change', handleImageCapture);
+      const video = document.getElementById('epodVideo');
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+          epodStream = stream;
+          video.srcObject = stream;
+        })
+        .catch(err => {
+          console.error("Error accessing camera:", err);
+        });
     }
 
-    // Welcome Popup Functions
-    function closeWelcome() {
-      document.getElementById('welcomePopup').style.display = 'none';
-      document.getElementById('welcomeOverlay').style.display = 'none';
+    function captureImage() {
+      const video = document.getElementById('epodVideo');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      capturedImageUrl = canvas.toDataURL('image/png');
+      if (epodStream) {
+        epodStream.getTracks().forEach(track => track.stop());
+        epodStream = null;
+      }
+      closeEpodCameraPopup();
+      document.getElementById('epodImageOverlay').style.display = 'block';
+      document.getElementById('epodImagePopup').style.display = 'block';
+      document.getElementById('capturedImage').src = capturedImageUrl;
     }
 
     function closeEpodCameraPopup() {
+      if (epodStream) {
+        epodStream.getTracks().forEach(track => track.stop());
+        epodStream = null;
+      }
       document.getElementById('epodCameraPopup').style.display = 'none';
       document.getElementById('epodOverlay').style.display = 'none';
-    }
-
-    function handleImageCapture(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          capturedImageUrl = e.target.result;
-          document.getElementById('capturedImage').src = capturedImageUrl;
-          closeEpodCameraPopup();
-          document.getElementById('epodImageOverlay').style.display = 'block';
-          document.getElementById('epodImagePopup').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
     }
 
     function closeEpodImagePopup() {
@@ -419,7 +446,7 @@
       document.getElementById('thankYouOverlay').style.display = 'none';
     }
 
-    // Quiz Functionality (Updated for instant feedback and "Next" button with rectangular option buttons)
+    // Quiz Functionality (Instant feedback with rectangular option buttons)
     function startQuiz() {
       currentQuestionIndex = 0;
       document.getElementById('quizOverlay').style.display = 'block';
@@ -440,7 +467,6 @@
         <button id="next-question-btn" disabled>Next</button>
       `;
       document.getElementById('quiz-content').innerHTML = quizHtml;
-
       document.getElementById('next-question-btn').addEventListener('click', nextQuestion);
     }
 
