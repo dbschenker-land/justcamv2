@@ -135,14 +135,15 @@
     overflow: hidden;
     position: relative;
     margin: 0 auto;
-    }
+}
 
-    #qrScanner video {
+#qrScanner video {
     width: 100% !important; /* Ensure video fills the container */
     height: auto !important; /* Maintain aspect ratio */
     object-fit: cover;
     transform: scale(1.2); /* Zoom in slightly for better scanning */
-    }
+}
+    
     #qrResult {
       font-size: 18px;
       font-weight: bold;
@@ -174,13 +175,13 @@
     }
     /* Welcome popup logo size */
     .popup-header img {
-    max-width: 250px; /* Increased from 150px */
+    max-width: 200px; /* Increased from 150px */
     height: auto;
     margin: 15px 0; /* Added margin for better spacing */
     }
     /* Main content logo */
   .logo {
-    width: 300px; /* Increased from 200px */
+    width: 250px; /* Increased from 200px */
     margin: 30px 0; /* Added more margin for better spacing */
   }
   </style>
@@ -614,21 +615,21 @@ window.onload = () => {
       }
     }
     
-    // Handle orientation changes
-    window.addEventListener("orientationchange", () => {
+// Handle orientation changes
+window.addEventListener("orientationchange", () => {
     if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
         stopScanner(false); // Stop scanner without closing popup
         startScanner(currentButtonId); // Restart scanner with current button ID
     }
-    });
+});
 
-    // Handle window resize (for desktop or tablet)
-    window.addEventListener("resize", () => {
+// Handle window resize (for desktop or tablet)
+window.addEventListener("resize", () => {
     if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
         stopScanner(false); // Stop scanner without closing popup
         startScanner(currentButtonId); // Restart scanner with current button ID
     }
-    });
+});
     
   </script>
 </body>
