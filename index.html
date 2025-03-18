@@ -78,6 +78,11 @@
         .radio-label input { margin-right: 10px; }
         .fun-fact { font-style: italic; margin-top: 10px; }
         .captured-image { width: 100%; border-radius: 10px; }
+        .quiz-question h3 { font-size: 20px; text-align: center; }
+        .quiz-question label { font-size: 18px; }
+        .quiz-question button { font-size: 18px; }
+        #qrResult { font-size: 18px; font-weight: bold; }
+        #qrResult.no-match { color: red; }
     </style>
 </head>
 <body>
@@ -141,16 +146,8 @@
         <div class="overlay" id="qrOverlay" style="display: none"></div>
         <div class="popup" id="qrPopup" style="display: none">
             <video id="qrScanner"></video>
-            <p id="qrResult" style="font-weight: bold;"></p>
+            <p id="qrResult"></p>
             <button onclick="stopScanner()">Cancel</button>
-        </div>
-
-        <!-- ePOD Camera -->
-        <div class="overlay" id="cameraOverlay" style="display: none"></div>
-        <div class="popup" id="cameraPopup" style="display: none">
-            <video id="cameraPreview" autoplay></video>
-            <button onclick="captureImage()">Capture</button>
-            <button onclick="closeCamera()">Cancel</button>
         </div>
 
         <!-- Captured Image Popup -->
@@ -193,7 +190,6 @@
     <script>
         let currentQuestion = 1;
         let qrScanner = null;
-        let cameraStream = null;
 
         function closeWelcome() {
             document.getElementById('welcomePopup').style.display = 'none';
@@ -245,8 +241,9 @@
             qrScanner = new QrScanner(
                 video,
                 result => {
-                    const isValid = validateQR(result.data);
+                    const isValid = result.data === "123456"; // Only accept 123456 as valid QR
                     document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
+                    document.getElementById('qrResult').className = isValid ? '' : 'no-match';
                     if (isValid) {
                         handleScanSuccess(buttonId);
                     }
@@ -254,11 +251,6 @@
                 { highlightScanRegion: true }
             );
             await qrScanner.start();
-        }
-
-        function validateQR(data) {
-            // Replace with your QR validation logic
-            return data.includes("valid"); // Example validation
         }
 
         function handleScanSuccess(buttonId) {
@@ -279,38 +271,26 @@
             document.getElementById('qrOverlay').style.display = 'none';
         }
 
-        async function openCamera() {
-            try {
-                const video = document.getElementById('cameraPreview');
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = cameraStream;
-                document.getElementById('cameraPopup').style.display = 'block';
-                document.getElementById('cameraOverlay').style.display = 'block';
-            } catch (error) {
-                alert('Error accessing camera: ' + error.message);
-            }
-        }
-
-        function captureImage() {
-            const video = document.getElementById('cameraPreview');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            const image = canvas.toDataURL('image/png');
-            closeCamera();
-            document.getElementById('capturedImage').src = image;
-            document.getElementById('imagePopup').style.display = 'block';
-            document.getElementById('imageOverlay').style.display = 'block';
-        }
-
-        function closeCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            document.getElementById('cameraPopup').style.display = 'none';
-            document.getElementById('cameraOverlay').style.display = 'none';
+        function openCamera() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.capture = 'environment';
+            input.accept = 'image/*';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = () => {
+                    document.getElementById('capturedImage').src = reader.result;
+                    document.getElementById('imagePopup').style.display = 'block';
+                    document.getElementById('imageOverlay').style.display = 'block';
+                    document.getElementById('epod').classList.add('completed');
+                    document.getElementById('epod').textContent = 'ePOD - Completed';
+                    document.getElementById('epod').disabled = true;
+                    saveState('epod');
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
         }
 
         function showEPODPopup() {
