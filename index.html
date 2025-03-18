@@ -49,10 +49,10 @@
     }
     /* When a button is completed, apply green background and disable it */
 .completed {
-    background-color: green !important;
-    color: #fff !important; /* White text color */
-    font-weight: 700; /* Bold text for better visibility */
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Subtle shadow for contrast */
+    background-color: #006400 !important; /* Darker green */
+    color: #fff !important;
+    font-weight: 700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
     }
     /* Quiz Option Button Styles */
@@ -172,6 +172,17 @@
       text-align: left;
       margin-bottom: 15px;
     }
+    /* Welcome popup logo size */
+    .popup-header img {
+    max-width: 250px; /* Increased from 150px */
+    height: auto;
+    margin: 15px 0; /* Added margin for better spacing */
+    }
+    /* Main content logo */
+  .logo {
+    width: 300px; /* Increased from 200px */
+    margin: 30px 0; /* Added more margin for better spacing */
+  }
   </style>
 </head>
 <body>
@@ -231,7 +242,7 @@
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h3>Electronic Proof of Delivery</h3>
       <!-- Reduced logo size -->
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 100px;">
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
       <h2>DB Schenker | landbridge</h2>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
