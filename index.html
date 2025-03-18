@@ -48,9 +48,12 @@
       cursor: not-allowed;
     }
     /* When a button is completed, apply green background and disable it */
-    .completed {
-      background-color: green !important;
-      color: #fff !important;
+.completed {
+    background-color: green !important;
+    color: #fff !important; /* White text color */
+    font-weight: 700; /* Bold text for better visibility */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Subtle shadow for contrast */
+}
     }
     /* Quiz Option Button Styles */
     .option-button {
@@ -122,18 +125,23 @@
       z-index: 999;
     }
     /* QR Scanner and Image Styling */
-    #qrScanner {
-      width: 100%;
-      height: 300px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
+#qrScanner {
+    width: 100%;
+    height: 60vh; /* Use viewport height for responsiveness */
+    max-height: 400px; /* Limit maximum height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
     }
+
     #qrScanner video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    width: 100% !important; /* Ensure video fills the container */
+    height: auto !important; /* Maintain aspect ratio */
+    object-fit: cover;
+    transform: scale(1.2); /* Zoom in slightly for better scanning */
     }
     #qrResult {
       font-size: 18px;
@@ -223,7 +231,7 @@
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h3>Electronic Proof of Delivery</h3>
       <!-- Reduced logo size -->
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 100px;">
       <h2>DB Schenker | landbridge</h2>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
@@ -268,14 +276,18 @@
 
     // Check if all buttons are completed to enable ePOD button
     function checkAllButtonsCompleted() {
-      const buttons = ['pickup', 'customClearance', 'crossBorder', 'transit', 'delivered'];
-      const allCompleted = buttons.every(buttonId => {
+    const buttons = ['pickup', 'customClearance', 'crossBorder', 'transit', 'delivered'];
+    const allCompleted = buttons.every(buttonId => {
         const btn = document.getElementById(buttonId);
         return btn.classList.contains('completed');
-      });
-      if (allCompleted) {
-        document.getElementById('epod').disabled = false;
-      }
+    });
+
+    const epodBtn = document.getElementById('epod');
+    if (allCompleted) {
+        epodBtn.disabled = false;
+    } else {
+        epodBtn.disabled = true;
+    }
     }
 
     // Configuration
@@ -320,12 +332,12 @@ let currentButtonId = null;
 
 // Modified startScanner function to track button ID
 async function startScanner(buttonId) {
-  currentButtonId = buttonId; // Store the current button ID
+    currentButtonId = buttonId; // Store the current button ID
     document.getElementById('qrPopup').style.display = 'block';
     document.getElementById('qrOverlay').style.display = 'block';
 
     html5QrCode = new Html5Qrcode("qrScanner");
-    const config = { fps: 10, qrbox: 250 };
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } }; // Square QR box
 
     try {
         const cameras = await Html5Qrcode.getCameras();
@@ -353,7 +365,7 @@ async function startScanner(buttonId) {
                     }
                 },
                 (errorMessage) => {
-                    // Optional: Add error logging here
+                    console.error(errorMessage);
                 }
             );
         } else {
@@ -388,33 +400,33 @@ function handleManualEntry() {
 
 // Modified stopScanner to accept optional parameter
 function stopScanner(closePopup = true) {
-  if (html5QrCode) {
-    html5QrCode.stop().then(() => {
-      html5QrCode.clear();
-      html5QrCode = null;
-    }).catch(err => {
-      console.error(err);
-    });
-  }
-  if (closePopup) {
-    document.getElementById('qrPopup').style.display = 'none';
-    document.getElementById('qrOverlay').style.display = 'none';
-  }
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            html5QrCode = null;
+        }).catch(err => {
+            console.error(err);
+        });
+    }
+    if (closePopup) {
+        document.getElementById('qrPopup').style.display = 'none';
+        document.getElementById('qrOverlay').style.display = 'none';
+    }
 }
 
     function handleScanSuccess(buttonId) {
-      const btn = document.getElementById(buttonId);
-      btn.classList.add('completed');
-      //btn.textContent = `${buttonId} - Completed`;
-      btn.disabled = true;
-      saveState(buttonId);
+    const btn = document.getElementById(buttonId);
+    btn.classList.add('completed');
+    btn.disabled = true;
+    saveState(buttonId);
+    checkAllButtonsCompleted(); // Check if all buttons are completed
     }
 
     // Local Storage Management
     function saveState(buttonId) {
-      const state = JSON.parse(localStorage.getItem('appState')) || {};
-      state[buttonId] = Date.now();
-      localStorage.setItem('appState', JSON.stringify(state));
+    const state = JSON.parse(localStorage.getItem('appState')) || {};
+    state[buttonId] = Date.now();
+    localStorage.setItem('appState', JSON.stringify(state));
     }
 
     function checkState() {
@@ -434,18 +446,20 @@ function stopScanner(closePopup = true) {
     }
 
     // Initialize state from localStorage
-    window.onload = () => {
-      checkState();
-      const state = JSON.parse(localStorage.getItem('appState')) || {};
-      Object.keys(state).forEach(buttonId => {
+window.onload = () => {
+    checkState();
+    const state = JSON.parse(localStorage.getItem('appState')) || {};
+    Object.keys(state).forEach(buttonId => {
         const btn = document.getElementById(buttonId);
         if (btn) {
-          btn.classList.add('completed');
-          btn.disabled = true;
+            btn.classList.add('completed');
+            btn.disabled = true;
         }
-      });
-      checkAllButtonsCompleted(); // Check if ePOD should be enabled on load
-    };
+    });
+
+    // Check if the epod button should be enabled
+    checkAllButtonsCompleted();
+};
 
     // ePOD Camera Handling (Direct Camera Capture)
     function initiateEpod() {
@@ -550,19 +564,28 @@ function stopScanner(closePopup = true) {
     }
 
     function handleQuizSelection(selectedAnswer) {
-      const question = quizQuestions[currentQuestionIndex];
-      const optionButtons = document.querySelectorAll('.option-button');
-      optionButtons.forEach(btn => {
+    const question = quizQuestions[currentQuestionIndex];
+    const optionButtons = document.querySelectorAll('.option-button');
+    optionButtons.forEach(btn => {
         if (btn.innerText.trim() === question.correctAnswer) {
-          btn.classList.add('correct-answer');
+            btn.classList.add('correct-answer');
         }
         if (btn.innerText.trim() === selectedAnswer && selectedAnswer !== question.correctAnswer) {
-          btn.classList.add('wrong-answer');
+            btn.classList.add('wrong-answer');
         }
         btn.disabled = true;
-      });
-      document.querySelector('.fun-fact').style.display = 'block';
-      document.getElementById('next-question-btn').disabled = false;
+    });
+    document.querySelector('.fun-fact').style.display = 'block';
+    document.getElementById('next-question-btn').disabled = false;
+
+    // If it's the last question, mark the quiz as completed
+    if (currentQuestionIndex === quizQuestions.length - 1) {
+        const clearanceBtn = document.getElementById('customClearance');
+        clearanceBtn.classList.add('completed');
+        clearanceBtn.disabled = true;
+        saveState('customClearance');
+        checkAllButtonsCompleted(); // Check if all buttons are completed
+    }
     }
 
     function nextQuestion() {
@@ -579,6 +602,23 @@ function stopScanner(closePopup = true) {
         checkAllButtonsCompleted(); // Check if ePOD should be enabled
       }
     }
+    
+    // Handle orientation changes
+    window.addEventListener("orientationchange", () => {
+    if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
+        stopScanner(false); // Stop scanner without closing popup
+        startScanner(currentButtonId); // Restart scanner with current button ID
+    }
+    });
+
+    // Handle window resize (for desktop or tablet)
+    window.addEventListener("resize", () => {
+    if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
+        stopScanner(false); // Stop scanner without closing popup
+        startScanner(currentButtonId); // Restart scanner with current button ID
+    }
+    });
+    
   </script>
 </body>
 </html>
