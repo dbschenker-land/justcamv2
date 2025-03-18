@@ -73,10 +73,11 @@
         .answer { margin: 10px 0; padding: 10px; cursor: pointer; }
         .correct { background-color: green !important; }
         .wrong { background-color: red !important; }
-        #qrScanner { display: none; width: 100%; height: 300px; }
+        #qrScanner, #cameraPreview { width: 100%; height: 300px; }
         .radio-label { display: block; margin: 10px 0; text-align: left; }
         .radio-label input { margin-right: 10px; }
         .fun-fact { font-style: italic; margin-top: 10px; }
+        .captured-image { width: 100%; border-radius: 10px; }
     </style>
 </head>
 <body>
@@ -140,6 +141,7 @@
         <div class="overlay" id="qrOverlay" style="display: none"></div>
         <div class="popup" id="qrPopup" style="display: none">
             <video id="qrScanner"></video>
+            <p id="qrResult" style="font-weight: bold;"></p>
             <button onclick="stopScanner()">Cancel</button>
         </div>
 
@@ -149,6 +151,30 @@
             <video id="cameraPreview" autoplay></video>
             <button onclick="captureImage()">Capture</button>
             <button onclick="closeCamera()">Cancel</button>
+        </div>
+
+        <!-- Captured Image Popup -->
+        <div class="overlay" id="imageOverlay" style="display: none"></div>
+        <div class="popup" id="imagePopup" style="display: none">
+            <img id="capturedImage" class="captured-image" src="#" alt="Captured Image">
+            <button onclick="showEPODPopup()">Continue</button>
+        </div>
+
+        <!-- Electronic Proof of Delivery Popup -->
+        <div class="overlay" id="epodOverlay" style="display: none"></div>
+        <div class="popup" id="epodPopup" style="display: none">
+            <img src="logo.png" alt="DB Schenker" class="logo">
+            <h2>Electronic Proof of Delivery</h2>
+            <p>DB Schenker | Landbridge</p>
+            <button onclick="showThankYouPopup()">Finish Experience</button>
+        </div>
+
+        <!-- Thank You Popup -->
+        <div class="overlay" id="thankYouOverlay" style="display: none"></div>
+        <div class="popup" id="thankYouPopup" style="display: none">
+            <h2>Thank You</h2>
+            <p>We hope you enjoyed this digital experience. Thank you for visiting us.</p>
+            <button onclick="closeThankYou()">Close</button>
         </div>
 
         <!-- Main Content -->
@@ -219,11 +245,20 @@
             qrScanner = new QrScanner(
                 video,
                 result => {
-                    handleScanSuccess(buttonId, result);
+                    const isValid = validateQR(result.data);
+                    document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
+                    if (isValid) {
+                        handleScanSuccess(buttonId);
+                    }
                 },
                 { highlightScanRegion: true }
             );
             await qrScanner.start();
+        }
+
+        function validateQR(data) {
+            // Replace with your QR validation logic
+            return data.includes("valid"); // Example validation
         }
 
         function handleScanSuccess(buttonId) {
@@ -264,7 +299,9 @@
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
             const image = canvas.toDataURL('image/png');
             closeCamera();
-            // Handle the captured image (e.g., display in a popup)
+            document.getElementById('capturedImage').src = image;
+            document.getElementById('imagePopup').style.display = 'block';
+            document.getElementById('imageOverlay').style.display = 'block';
         }
 
         function closeCamera() {
@@ -274,6 +311,25 @@
             }
             document.getElementById('cameraPopup').style.display = 'none';
             document.getElementById('cameraOverlay').style.display = 'none';
+        }
+
+        function showEPODPopup() {
+            document.getElementById('imagePopup').style.display = 'none';
+            document.getElementById('imageOverlay').style.display = 'none';
+            document.getElementById('epodPopup').style.display = 'block';
+            document.getElementById('epodOverlay').style.display = 'block';
+        }
+
+        function showThankYouPopup() {
+            document.getElementById('epodPopup').style.display = 'none';
+            document.getElementById('epodOverlay').style.display = 'none';
+            document.getElementById('thankYouPopup').style.display = 'block';
+            document.getElementById('thankYouOverlay').style.display = 'block';
+        }
+
+        function closeThankYou() {
+            document.getElementById('thankYouPopup').style.display = 'none';
+            document.getElementById('thankYouOverlay').style.display = 'none';
         }
 
         function saveState(buttonId) {
