@@ -9,7 +9,7 @@
   <style>
     /* Overall Appearance */
     body {
-      background-color: teal;
+      background-color: teal; /* Set background color to teal */
       margin: 0;
       padding: 20px;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -47,7 +47,7 @@
       opacity: 0.6;
       cursor: not-allowed;
     }
-    /* When a button is completed, just apply green background and disable it */
+    /* When a button is completed, apply green background and disable it */
     .completed {
       background-color: green !important;
       color: #fff !important;
@@ -105,6 +105,10 @@
       text-align: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
+    /* Override background for ePOD pop-up */
+    #epodDetailsPopup {
+      background-color: #fff; /* Keep ePOD pop-up background white */
+    }
     .popup h2, .popup h3 {
       color: #333;
     }
@@ -118,13 +122,22 @@
       z-index: 999;
     }
     /* QR Scanner and Image Styling */
-    #qrScanner, #cameraPreview {
+    #qrScanner {
       width: 100%;
       height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    #qrScanner video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     /* Adjust scanning window height for small screens */
     @media (max-width: 480px) {
-      #qrScanner, #cameraPreview {
+      #qrScanner {
         height: 200px;
       }
     }
@@ -215,7 +228,7 @@
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h3>Electronic Proof of Delivery</h3>
       <!-- Reduced logo size -->
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 50px;">
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 100px;">
       <h2>DB Schenker | landbridge</h2>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
@@ -238,7 +251,7 @@
     <button id="crossBorder" onclick="startScanner('crossBorder')">Cross Border</button>
     <button id="transit" onclick="startScanner('transit')">Transit</button>
     <button id="delivered" onclick="startScanner('delivered')">Delivered</button>
-    <button id="epod" onclick="initiateEpod()">ePOD</button>
+    <button id="epod" onclick="initiateEpod()" disabled>ePOD</button>
   </div>
 
   <script>
@@ -255,6 +268,19 @@
       btn.classList.add('completed');
       btn.disabled = true;
       saveState(buttonId);
+      checkAllButtonsCompleted(); // Check if all buttons are completed
+    }
+
+    // Check if all buttons are completed to enable ePOD button
+    function checkAllButtonsCompleted() {
+      const buttons = ['pickup', 'customClearance', 'crossBorder', 'transit', 'delivered'];
+      const allCompleted = buttons.every(buttonId => {
+        const btn = document.getElementById(buttonId);
+        return btn.classList.contains('completed');
+      });
+      if (allCompleted) {
+        document.getElementById('epod').disabled = false;
+      }
     }
 
     // Configuration
@@ -319,10 +345,7 @@
               document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
               document.getElementById('qrResult').className = isValid ? '' : 'no-match';
               if (isValid) {
-                const btn = document.getElementById(buttonId);
-                btn.classList.add('completed');
-                btn.disabled = true;
-                saveState(buttonId);
+                handleButtonClick(buttonId); // Mark button as completed
                 stopScanner(); // Stop scanning after a valid scan
               }
             }
@@ -382,21 +405,29 @@
           btn.disabled = true;
         }
       });
+      checkAllButtonsCompleted(); // Check if ePOD should be enabled on load
     };
 
     // ePOD Camera Handling (Direct Camera Capture)
     function initiateEpod() {
-      document.getElementById('epodOverlay').style.display = 'block';
-      document.getElementById('epodCameraPopup').style.display = 'block';
-      const video = document.getElementById('epodVideo');
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-        .then(stream => {
-          epodStream = stream;
-          video.srcObject = stream;
-        })
-        .catch(err => {
-          console.error("Error accessing camera:", err);
-        });
+      // Open file selection window first
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.onchange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            capturedImageUrl = e.target.result;
+            document.getElementById('epodImageOverlay').style.display = 'block';
+            document.getElementById('epodImagePopup').style.display = 'block';
+            document.getElementById('capturedImage').src = capturedImageUrl;
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+      fileInput.click();
     }
 
     function captureImage() {
@@ -429,7 +460,7 @@
     function closeEpodImagePopup() {
       document.getElementById('epodImagePopup').style.display = 'none';
       document.getElementById('epodImageOverlay').style.display = 'none';
-      initiateEpod(); // Reopen camera for retake
+      initiateEpod(); // Reopen file selection for retake
     }
 
     function showEpodDetailsPopup() {
@@ -506,6 +537,7 @@
         clearanceBtn.classList.add('completed');
         clearanceBtn.disabled = true;
         saveState('customClearance');
+        checkAllButtonsCompleted(); // Check if ePOD should be enabled
       }
     }
   </script>
