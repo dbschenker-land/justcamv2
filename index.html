@@ -37,18 +37,18 @@
       margin: 5px 0; /* Reduced margin */
       font-size: 1.5em; /* Increased font size */
     }
-    /* Updated Buttons (90% width, modern styling) */
+    /* Updated Navigation Buttons */
     button {
-      width: 90%; /* Increased width */
-      padding: 15px; /* Slightly reduced padding */
+      width: 95%; /* Increased width */
+      padding: 20px; /* Increased padding for taller buttons */
       background-color: #fff;
       color: #333;
       border: none;
       border-radius: 12px;
-      font-size: 16px; /* Standard font size */
+      font-size: 18px; /* Increased font size */
       font-weight: 500;
       cursor: pointer;
-      margin: 5px 0; /* Reduced margin */
+      margin: 10px 0; /* Increased margin for better spacing */
       transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
@@ -175,7 +175,9 @@
       justify-content: center;
       margin-bottom: 15px; /* Reduced margin */
     }
+    /* Invert logo color to white */
     .popup-header img {
+      filter: brightness(0) invert(1); /* Converts black to white */
       max-width: 250px; /* Smaller logo */
       height: auto;
     }
@@ -218,23 +220,6 @@
       font-size: 14px;
       margin-bottom: 10px;
     }
-
-      /* Style for logo and landbridge container */
-  .logo-landbridge-container {
-    display: flex;
-    align-items: center; /* Vertically center items */
-    justify-content: center; /* Horizontally center items */
-    gap: 10px; /* Space between logo and text */
-    margin-top: 10px; /* Add space between h2 and this container */
-  }
-
-  /* Adjust h3 styling for "| landbridge" */
-  .logo-landbridge-container h3 {
-    margin: 0; /* Remove default margin */
-    font-size: 1.2em; /* Adjust font size if needed */
-    color: #fff; /* Ensure text is white */
-  }
-    
   </style>
 </head>
 <body>
@@ -243,7 +228,7 @@
     <div class="overlay" id="welcomeOverlay"></div>
     <div class="popup" id="welcomePopup">
       <div class="popup-header">
-        <img src="db-schenker-logo-main.png" alt="DB Schenker Logo" width="300" height="150">
+        <img src="db-schenker-logo.png" alt="DB Schenker Logo" width="300" height="150">
       </div>
       <h2>Join us for the digital experience</h2>
       <p>Scan QR codes at each station and unlock the final ePOD!</p>
@@ -297,8 +282,8 @@
       <!-- Add a line space between h2 and the logo -->
       <br>
       <div class="logo-landbridge-container">
-    <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
-    <h3>| landbridge</h3>
+        <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
+        <h3>| landbridge</h3>
       </div>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
@@ -313,10 +298,8 @@
 
     <!-- Main Content -->
     <img src="db-schenker-logo-main.png" alt="DB Schenker main" class="logo">
-    <h1>DB Schenker | landbridge</h1>
-    <!-- Add a line space between h2 and the logo -->
-    <br>
-    
+    <h2>DB Schenker | landbridge</h2>
+
     <!-- Navigation Buttons -->
     <button id="pickup" class="completed" disabled>Pickup</button>
     <button id="customClearance" onclick="startQuiz()">Custom Clearance</button>
