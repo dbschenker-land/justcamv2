@@ -21,24 +21,24 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px; /* Reduced gap */
+      gap: 5px; /* Reduced gap */
     }
     .logo {
       width: 200px; /* Slightly smaller logo */
-      margin: 10px 0; /* Reduced margin */
-    }
-    h1 {
       margin: 5px 0; /* Reduced margin */
+    }
+    h2, h3 {
+      margin: 2px 0; /* Reduced margin */
     }
     /* Updated Buttons (80% width, modern styling) */
     button {
-      width: 80%;
-      padding: 12px; /* Slightly reduced padding */
+      width: 85%; /* Increased width */
+      padding: 15px; /* Slightly increased padding */
       background-color: #fff;
       color: #333;
       border: none;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 18px; /* Increased font size */
       font-weight: 500;
       cursor: pointer;
       margin: 5px 0; /* Reduced margin */
@@ -117,7 +117,7 @@
     }
     /* Override background for ePOD pop-up */
     #epodDetailsPopup {
-      background-color: #009494; /* Light teal */
+    background-color: #009494; /* Light teal */
     }
     .popup h2, .popup h3 {
       color: #333;
@@ -193,7 +193,7 @@
     /* Main content logo */
     .logo {
       width: 200px; /* Smaller logo */
-      margin: 15px 0; /* Reduced margin */
+      margin: 5px 0; /* Reduced margin */
     }
     /* Custom style for specific buttons */
     #welcomePopup button,
@@ -218,10 +218,9 @@
     <div class="overlay" id="welcomeOverlay"></div>
     <div class="popup" id="welcomePopup">
       <div class="popup-header">
-        <img src="db-schenker-logo-main.png" alt="DB Schenker Logo">
+        <img src="db-schenker-logo.png" alt="DB Schenker Logo">
       </div>
-      <h3>Join us for a digital experience</h3>
-      <h4>DB Schenker | landbridge</h4>
+      <h3>Welcome To DB Schenker Digital Experience</h3>
       <p>Scan QR codes at each station and unlock the final ePOD!</p>
       <button onclick="closeWelcome()">Get Started</button>
     </div>
@@ -271,7 +270,7 @@
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h2>Electronic Proof of Delivery</h2>
       <!-- Reduced logo size -->
-      <img src="db-schenker-logo-main.png" alt="DB Schenker Logo" style="width: 150px;">
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
       <h3>DB Schenker | landbridge</h3>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
@@ -286,7 +285,8 @@
 
     <!-- Main Content -->
     <img src="db-schenker-logo-main.png" alt="DB Schenker main" class="logo">
-    <h2>DB Schenker | landbridge</h2>
+    <h2>Landbridge Event</h2>
+    <h3>DB Schenker | landbridge</h3>
 
     <!-- Navigation Buttons -->
     <button id="pickup" class="completed" disabled>Pickup</button>
@@ -396,7 +396,7 @@
             config,
             (decodedText, decodedResult) => {
               const isValid = decodedText === validQRCodes[buttonId];
-              document.getElementById('qrResult').textContent = isValid ? '' : 'No Match!';
+              document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
               document.getElementById('qrResult').className = isValid ? '' : 'no-match';
               if (isValid) {
                 handleScanSuccess(buttonId);
