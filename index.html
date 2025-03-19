@@ -218,6 +218,23 @@
       font-size: 14px;
       margin-bottom: 10px;
     }
+
+      /* Style for logo and landbridge container */
+  .logo-landbridge-container {
+    display: flex;
+    align-items: center; /* Vertically center items */
+    justify-content: center; /* Horizontally center items */
+    gap: 10px; /* Space between logo and text */
+    margin-top: 10px; /* Add space between h2 and this container */
+  }
+
+  /* Adjust h3 styling for "| landbridge" */
+  .logo-landbridge-container h3 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.2em; /* Adjust font size if needed */
+    color: #fff; /* Ensure text is white */
+  }
+    
   </style>
 </head>
 <body>
@@ -277,11 +294,12 @@
     <div class="overlay" id="epodDetailsOverlay" style="display: none"></div>
     <div class="popup" id="epodDetailsPopup" style="display: none">
       <h2>Electronic Proof of Delivery</h2>
-      <!-- Reduced logo size -->
-      <h3> </h3>
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 250px;">
-      <h3> </h3>
-      <h3>DB Schenker | landbridge</h3>
+      <!-- Add a line space between h2 and the logo -->
+      <br>
+      <div class="logo-landbridge-container">
+    <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
+    <h3>| landbridge</h3>
+      </div>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
 
