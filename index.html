@@ -9,11 +9,11 @@
   <style>
     /* Overall Appearance */
     body {
-      background-color: teal; /* Set background color to teal */
+      background-color: #008080; /* Softer teal */
       margin: 0;
       padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      font-size: 14px;
+      font-family: Arial, sans-serif; /* Standalone font */
+      font-size: 16px;
       text-align: center;
       color: #fff;
     }
@@ -21,50 +21,53 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 20px;
     }
     .logo {
-      width: 200px;
-      margin: 20px 0;
+      width: 250px;
+      margin: 30px 0;
     }
-    /* Updated Buttons (80% width) */
+    /* Updated Buttons (80% width, modern styling) */
     button {
       width: 80%;
-      padding: 12px;
+      padding: 15px;
       background-color: #fff;
       color: #333;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 500;
       cursor: pointer;
-      margin: 5px 0;
-      transition: background-color 0.3s, transform 0.2s;
+      margin: 10px 0;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     button:hover {
       transform: scale(1.02);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
     }
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
     /* When a button is completed, apply green background and disable it */
-.completed {
-    background-color: #006400 !important; /* Darker green */
-    color: #fff !important;
-    font-weight: 700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
+    .completed {
+      background-color: #006400 !important; /* Darker green */
+      color: #fff !important;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
     /* Quiz Option Button Styles */
     .option-button {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0;
+      padding: 12px;
+      margin: 8px 0;
       background-color: #fff;
       color: #333;
       border: 2px solid #333;
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
       cursor: pointer;
       transition: background-color 0.3s;
     }
@@ -88,9 +91,10 @@
     }
     .fun-fact {
       font-style: italic;
-      margin-top: 10px;
+      margin-top: 15px;
       text-align: center;
       color: #555;
+      font-size: 14px;
     }
     /* Popup Styling */
     .popup {
@@ -98,22 +102,24 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
+      background-color: #009494; /* Light teal */
+      padding: 25px;
+      border-radius: 15px;
       z-index: 1000;
       color: #333;
       width: 90%;
       max-width: 400px;
       text-align: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
     /* Override background for ePOD pop-up */
     #epodDetailsPopup {
-      background-color: #fff; /* Keep ePOD pop-up background white */
+      background-color: #009494; /* Light teal */
     }
     .popup h2, .popup h3 {
       color: #333;
+      font-family: Arial, sans-serif; /* Standalone font */
+      font-weight: 600;
     }
     .overlay {
       position: fixed;
@@ -121,34 +127,34 @@
       left: 0;
       width: 100%;
       height: 100%;
-      backdrop-filter: blur(5px);
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
       z-index: 999;
     }
     /* QR Scanner and Image Styling */
-#qrScanner {
-    width: 80%; /* Adjust width as needed */
-    max-width: 300px; /* Limit maximum size */
-    aspect-ratio: 1 / 1; /* Make it square */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    margin: 0 auto; /* Center the scanner */
-    border: 2px solid #fff; /* Optional: Add a border for better visibility */
-    border-radius: 10px; /* Optional: Rounded corners */
-}
-
-#qrScanner video {
-    width: 100% !important; /* Ensure video fills the container */
-    height: 100% !important; /* Ensure video fills the container */
-    object-fit: cover;
-    transform: scale(1.2); /* Zoom in slightly for better scanning */
-}
-    
+    #qrScanner {
+      width: 80%; /* Adjust width as needed */
+      max-width: 300px; /* Limit maximum size */
+      aspect-ratio: 1 / 1; /* Make it square */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      margin: 0 auto; /* Center the scanner */
+      border: 2px solid #fff; /* Optional: Add a border for better visibility */
+      border-radius: 12px; /* Optional: Rounded corners */
+    }
+    #qrScanner video {
+      width: 100% !important; /* Ensure video fills the container */
+      height: 100% !important; /* Ensure video fills the container */
+      object-fit: cover;
+      transform: scale(1.2); /* Zoom in slightly for better scanning */
+    }
     #qrResult {
       font-size: 18px;
       font-weight: bold;
+      margin-top: 15px;
     }
     #qrResult.no-match {
       color: red;
@@ -156,36 +162,44 @@
     .popup-header {
       display: flex;
       justify-content: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     .popup-header img {
-      max-width: 150px;
+      max-width: 200px;
       height: auto;
     }
     .qr-popup-controls {
-      margin-top: 15px;
+      margin-top: 20px;
     }
     #capturedImage {
       max-width: 100%;
       height: auto;
-      border-radius: 8px;
-      margin-bottom: 10px;
+      border-radius: 12px;
+      margin-bottom: 15px;
     }
     #epodDetails {
       text-align: left;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
     /* Welcome popup logo size */
     .popup-header img {
-    max-width: 200px; /* Increased from 150px */
-    height: auto;
-    margin: 15px 0; /* Added margin for better spacing */
+      max-width: 200px; /* Increased from 150px */
+      height: auto;
+      margin: 20px 0; /* Added margin for better spacing */
     }
     /* Main content logo */
-  .logo {
-    width: 250px; /* Increased from 200px */
-    margin: 30px 0; /* Added more margin for better spacing */
-  }
+    .logo {
+      width: 250px; /* Increased from 200px */
+      margin: 40px 0; /* Added more margin for better spacing */
+    }
+    /* Custom style for specific buttons */
+    #welcomePopup button,
+    #quizPopup #next-question-btn,
+    #epodDetailsPopup button,
+    #thankYouPopup button {
+      background-color: #f0f0f0; /* Light grey */
+      color: #333; /* Dark text for contrast */
+    }
   </style>
 </head>
 <body>
@@ -211,22 +225,22 @@
     </div>
 
     <!-- QR Scanner Popup -->
-<div class="overlay" id="qrOverlay" style="display: none"></div>
-<div class="popup" id="qrPopup" style="display: none">
-  <div id="qrScanner"></div>
-  <p id="qrResult"></p>
-  <div class="qr-popup-controls">
-    <button onclick="stopScanner()">Close</button>
-    <!-- Added manual entry button -->
-    <button onclick="handleManualEntry()">Enter Code Manually</button>
-  </div>
-</div>
+    <div class="overlay" id="qrOverlay" style="display: none"></div>
+    <div class="popup" id="qrPopup" style="display: none">
+      <div id="qrScanner"></div>
+      <p id="qrResult"></p>
+      <div class="qr-popup-controls">
+        <button onclick="stopScanner()">Close</button>
+        <!-- Added manual entry button -->
+        <button onclick="handleManualEntry()">Enter Code Manually</button>
+      </div>
+    </div>
 
     <!-- ePOD Camera Popup (Direct Camera Capture) -->
     <div class="overlay" id="epodOverlay" style="display: none"></div>
     <div class="popup" id="epodCameraPopup" style="display: none">
       <h3>Capture Delivery Image</h3>
-      <video id="epodVideo" autoplay playsinline style="width:100%; border-radius: 8px;"></video>
+      <video id="epodVideo" autoplay playsinline style="width:100%; border-radius: 12px;"></video>
       <button onclick="captureImage()">Capture</button>
       <button onclick="closeEpodCameraPopup()">Cancel</button>
     </div>
@@ -290,18 +304,18 @@
 
     // Check if all buttons are completed to enable ePOD button
     function checkAllButtonsCompleted() {
-    const buttons = ['pickup', 'customClearance', 'crossBorder', 'transit', 'delivered'];
-    const allCompleted = buttons.every(buttonId => {
+      const buttons = ['pickup', 'customClearance', 'crossBorder', 'transit', 'delivered'];
+      const allCompleted = buttons.every(buttonId => {
         const btn = document.getElementById(buttonId);
         return btn.classList.contains('completed');
-    });
+      });
 
-    const epodBtn = document.getElementById('epod');
-    if (allCompleted) {
+      const epodBtn = document.getElementById('epod');
+      if (allCompleted) {
         epodBtn.disabled = false;
-    } else {
+      } else {
         epodBtn.disabled = true;
-    }
+      }
     }
 
     // Configuration
@@ -315,23 +329,23 @@
     let currentQuestionIndex = 0;
     const quizQuestions = [
       {
-                question: "Which of the following is a MUST-HAVE document for customs clearance?", 
-                options: ["Your passport","Commercial invoice","Hotel reservation","Travel guidebook"], 
-                correctAnswer: "Commercial invoice", // Correct answer
-                funFact: "While a travel guidebook might help you explore, customs officers are more interested in the value of your goods!" // Fun fact
-            },
-            { 
-                question: "If your shipment is worth over $5,000, will you need to pay customs duties?", 
-                options: ["Yes", "No"], 
-                correctAnswer: "Yes", // Correct answer
-                funFact: "Think of customs duties as a ‘toll fee’—the higher the value, the higher the cost!" // Fun fact
-            },
-            { 
-                question: "Which of the following items is most likely to be held by customs?", 
-                options: ["Electronics", "Fresh fruits", "Clothing", "Books"], 
-                correctAnswer: "Fresh fruits", // Correct answer
-                funFact: "Fresh fruits might carry pests, and customs officers aren’t fans of uninvited ‘guests’!" // Fun fact
-            }
+        question: "Which of the following is a MUST-HAVE document for customs clearance?",
+        options: ["Your passport", "Commercial invoice", "Hotel reservation", "Travel guidebook"],
+        correctAnswer: "Commercial invoice", // Correct answer
+        funFact: "While a travel guidebook might help you explore, customs officers are more interested in the value of your goods!" // Fun fact
+      },
+      {
+        question: "If your shipment is worth over $5,000, will you need to pay customs duties?",
+        options: ["Yes", "No"],
+        correctAnswer: "Yes", // Correct answer
+        funFact: "Think of customs duties as a ‘toll fee’—the higher the value, the higher the cost!" // Fun fact
+      },
+      {
+        question: "Which of the following items is most likely to be held by customs?",
+        options: ["Electronics", "Fresh fruits", "Clothing", "Books"],
+        correctAnswer: "Fresh fruits", // Correct answer
+        funFact: "Fresh fruits might carry pests, and customs officers aren’t fans of uninvited ‘guests’!" // Fun fact
+      }
     ];
 
     // Global reference for html5-qrcode scanner and captured image
@@ -339,108 +353,107 @@
     let capturedImageUrl = "";
     let epodStream = null;
 
-// QR Code Handling using html5-qrcode library
-      // Modified QR Scanner function with iOS-specific fixes
-// Add global variable to track current button ID
-let currentButtonId = null;
+    // Modified QR Scanner function with iOS-specific fixes
+    // Add global variable to track current button ID
+    let currentButtonId = null;
 
-// Modified startScanner function to track button ID
-async function startScanner(buttonId) {
-    currentButtonId = buttonId; // Store the current button ID
-    document.getElementById('qrPopup').style.display = 'block';
-    document.getElementById('qrOverlay').style.display = 'block';
+    // Modified startScanner function to track button ID
+    async function startScanner(buttonId) {
+      currentButtonId = buttonId; // Store the current button ID
+      document.getElementById('qrPopup').style.display = 'block';
+      document.getElementById('qrOverlay').style.display = 'block';
 
-    html5QrCode = new Html5Qrcode("qrScanner");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } }; // Square QR box
+      html5QrCode = new Html5Qrcode("qrScanner");
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } }; // Square QR box
 
-    try {
+      try {
         const cameras = await Html5Qrcode.getCameras();
         if (cameras && cameras.length) {
-            // Find back camera (environment-facing)
-            let cameraId = cameras[0].id;
-            for (const cam of cameras) {
-                if (cam.label.toLowerCase().includes("back") || 
-                    cam.label.toLowerCase().includes("environment")) {
-                    cameraId = cam.id;
-                    break;
-                }
+          // Find back camera (environment-facing)
+          let cameraId = cameras[0].id;
+          for (const cam of cameras) {
+            if (cam.label.toLowerCase().includes("back") ||
+              cam.label.toLowerCase().includes("environment")) {
+              cameraId = cam.id;
+              break;
             }
+          }
 
-            await html5QrCode.start(
-                cameraId,
-                config,
-                (decodedText, decodedResult) => {
-                    const isValid = decodedText === validQRCodes[buttonId];
-                    document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
-                    document.getElementById('qrResult').className = isValid ? '' : 'no-match';
-                    if (isValid) {
-                        handleScanSuccess(buttonId);
-                        stopScanner();
-                    }
-                },
-                (errorMessage) => {
-                    console.error(errorMessage);
-                }
-            );
+          await html5QrCode.start(
+            cameraId,
+            config,
+            (decodedText, decodedResult) => {
+              const isValid = decodedText === validQRCodes[buttonId];
+              document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
+              document.getElementById('qrResult').className = isValid ? '' : 'no-match';
+              if (isValid) {
+                handleScanSuccess(buttonId);
+                stopScanner();
+              }
+            },
+            (errorMessage) => {
+              console.error(errorMessage);
+            }
+          );
         } else {
-            console.error("No cameras found.");
-            alert("No cameras available. Please check your device camera.");
+          console.error("No cameras found.");
+          alert("No cameras available. Please check your device camera.");
         }
-    } catch (err) {
+      } catch (err) {
         console.error(err);
         alert("Camera access error: " + err.message);
         stopScanner();
+      }
     }
-}
 
-// New manual entry handler
-function handleManualEntry() {
-  stopScanner(false); // Stop scanner but keep popup open
-  const manualCode = prompt("Please enter the QR code manually:");
-  const isValid = manualCode === validQRCodes[currentButtonId];
-  
-  const resultElement = document.getElementById('qrResult');
-  if (isValid) {
-    resultElement.textContent = 'Match!';
-    resultElement.className = '';
-    handleScanSuccess(currentButtonId);
-    stopScanner(); // Close popup on success
-  } else {
-    resultElement.textContent = 'No Match!';
-    resultElement.className = 'no-match';
-    // Optional: Restart scanner here if desired
-  }
-}
+    // New manual entry handler
+    function handleManualEntry() {
+      stopScanner(false); // Stop scanner but keep popup open
+      const manualCode = prompt("Please enter the QR code manually:");
+      const isValid = manualCode === validQRCodes[currentButtonId];
 
-// Modified stopScanner to accept optional parameter
-function stopScanner(closePopup = true) {
-    if (html5QrCode) {
+      const resultElement = document.getElementById('qrResult');
+      if (isValid) {
+        resultElement.textContent = 'Match!';
+        resultElement.className = '';
+        handleScanSuccess(currentButtonId);
+        stopScanner(); // Close popup on success
+      } else {
+        resultElement.textContent = 'No Match!';
+        resultElement.className = 'no-match';
+        // Optional: Restart scanner here if desired
+      }
+    }
+
+    // Modified stopScanner to accept optional parameter
+    function stopScanner(closePopup = true) {
+      if (html5QrCode) {
         html5QrCode.stop().then(() => {
-            html5QrCode.clear();
-            html5QrCode = null;
+          html5QrCode.clear();
+          html5QrCode = null;
         }).catch(err => {
-            console.error(err);
+          console.error(err);
         });
-    }
-    if (closePopup) {
+      }
+      if (closePopup) {
         document.getElementById('qrPopup').style.display = 'none';
         document.getElementById('qrOverlay').style.display = 'none';
+      }
     }
-}
 
     function handleScanSuccess(buttonId) {
-    const btn = document.getElementById(buttonId);
-    btn.classList.add('completed');
-    btn.disabled = true;
-    saveState(buttonId);
-    checkAllButtonsCompleted(); // Check if all buttons are completed
+      const btn = document.getElementById(buttonId);
+      btn.classList.add('completed');
+      btn.disabled = true;
+      saveState(buttonId);
+      checkAllButtonsCompleted(); // Check if all buttons are completed
     }
 
     // Local Storage Management
     function saveState(buttonId) {
-    const state = JSON.parse(localStorage.getItem('appState')) || {};
-    state[buttonId] = Date.now();
-    localStorage.setItem('appState', JSON.stringify(state));
+      const state = JSON.parse(localStorage.getItem('appState')) || {};
+      state[buttonId] = Date.now();
+      localStorage.setItem('appState', JSON.stringify(state));
     }
 
     function checkState() {
@@ -460,20 +473,20 @@ function stopScanner(closePopup = true) {
     }
 
     // Initialize state from localStorage
-window.onload = () => {
-    checkState();
-    const state = JSON.parse(localStorage.getItem('appState')) || {};
-    Object.keys(state).forEach(buttonId => {
+    window.onload = () => {
+      checkState();
+      const state = JSON.parse(localStorage.getItem('appState')) || {};
+      Object.keys(state).forEach(buttonId => {
         const btn = document.getElementById(buttonId);
         if (btn) {
-            btn.classList.add('completed');
-            btn.disabled = true;
+          btn.classList.add('completed');
+          btn.disabled = true;
         }
-    });
+      });
 
-    // Check if the epod button should be enabled
-    checkAllButtonsCompleted();
-};
+      // Check if the epod button should be enabled
+      checkAllButtonsCompleted();
+    };
 
     // ePOD Camera Handling (Direct Camera Capture)
     function initiateEpod() {
@@ -578,28 +591,28 @@ window.onload = () => {
     }
 
     function handleQuizSelection(selectedAnswer) {
-    const question = quizQuestions[currentQuestionIndex];
-    const optionButtons = document.querySelectorAll('.option-button');
-    optionButtons.forEach(btn => {
+      const question = quizQuestions[currentQuestionIndex];
+      const optionButtons = document.querySelectorAll('.option-button');
+      optionButtons.forEach(btn => {
         if (btn.innerText.trim() === question.correctAnswer) {
-            btn.classList.add('correct-answer');
+          btn.classList.add('correct-answer');
         }
         if (btn.innerText.trim() === selectedAnswer && selectedAnswer !== question.correctAnswer) {
-            btn.classList.add('wrong-answer');
+          btn.classList.add('wrong-answer');
         }
         btn.disabled = true;
-    });
-    document.querySelector('.fun-fact').style.display = 'block';
-    document.getElementById('next-question-btn').disabled = false;
+      });
+      document.querySelector('.fun-fact').style.display = 'block';
+      document.getElementById('next-question-btn').disabled = false;
 
-    // If it's the last question, mark the quiz as completed
-    if (currentQuestionIndex === quizQuestions.length - 1) {
+      // If it's the last question, mark the quiz as completed
+      if (currentQuestionIndex === quizQuestions.length - 1) {
         const clearanceBtn = document.getElementById('customClearance');
         clearanceBtn.classList.add('completed');
         clearanceBtn.disabled = true;
         saveState('customClearance');
         checkAllButtonsCompleted(); // Check if all buttons are completed
-    }
+      }
     }
 
     function nextQuestion() {
@@ -616,23 +629,22 @@ window.onload = () => {
         checkAllButtonsCompleted(); // Check if ePOD should be enabled
       }
     }
-    
-// Handle orientation changes
-window.addEventListener("orientationchange", () => {
-    if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
-        stopScanner(false); // Stop scanner without closing popup
-        startScanner(currentButtonId); // Restart scanner with current button ID
-    }
-});
 
-// Handle window resize (for desktop or tablet)
-window.addEventListener("resize", () => {
-    if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
+    // Handle orientation changes
+    window.addEventListener("orientationchange", () => {
+      if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
         stopScanner(false); // Stop scanner without closing popup
         startScanner(currentButtonId); // Restart scanner with current button ID
-    }
-});
-    
+      }
+    });
+
+    // Handle window resize (for desktop or tablet)
+    window.addEventListener("resize", () => {
+      if (html5QrCode && document.getElementById('qrPopup').style.display === 'block') {
+        stopScanner(false); // Stop scanner without closing popup
+        startScanner(currentButtonId); // Restart scanner with current button ID
+      }
+    });
   </script>
 </body>
 </html>
