@@ -1,3 +1,5 @@
+
+Copy
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +32,7 @@
       max-width: 400px; /* Limit maximum width for better readability */
     }
     .logo {
-      width: 300px; /* Smaller logo */
+      width: 250px; /* Smaller logo */
       margin: 10px 0; /* Reduced margin */
     }
     h2, h3 {
@@ -40,7 +42,7 @@
     /* Updated Navigation Buttons */
     button {
       width: 95%; /* Increased width */
-      padding: 18px; /* Increased padding for taller buttons */
+      padding: 20px; /* Increased padding for taller buttons */
       background-color: #fff;
       color: #333;
       border: none;
@@ -175,9 +177,9 @@
       justify-content: center;
       margin-bottom: 15px; /* Reduced margin */
     }
-    /* Invert logo color to white */
+    /* Ensure logo displays properly */
     .popup-header img {
-      filter: brightness(0) invert(1); /* Converts black to white */
+      filter: none; /* Ensure no filter is applied */
       max-width: 250px; /* Smaller logo */
       height: auto;
     }
@@ -194,16 +196,15 @@
       text-align: left;
       margin-bottom: 15px; /* Reduced margin */
     }
-    /* Welcome popup logo size 
+    /* Welcome popup logo size */
     .popup-header img {
-      filter: none; /* Remove the filter */
       max-width: 200px; /* Smaller logo */
       height: auto;
       margin: 15px 0; /* Reduced margin */
-    }*/
+    }
     /* Main content logo */
     .logo {
-      width: 300px; /* Smaller logo */
+      width: 200px; /* Smaller logo */
       margin: 10px 0; /* Reduced margin */
     }
     /* Custom style for specific buttons */
@@ -229,7 +230,8 @@
     <div class="overlay" id="welcomeOverlay"></div>
     <div class="popup" id="welcomePopup">
       <div class="popup-header">
-        <img src="db-schenker-logo-main.png" alt="DB Schenker Logo" width="300" height="150">
+        <!-- Ensure the image path is correct -->
+        <img src="db-schenker-logo.png" alt="DB Schenker Logo" width="300" height="150">
       </div>
       <h2>Join us for the digital experience</h2>
       <p>Scan QR codes at each station and unlock the final ePOD!</p>
@@ -279,12 +281,12 @@
     <!-- Electronic Proof of Delivery Popup -->
     <div class="overlay" id="epodDetailsOverlay" style="display: none"></div>
     <div class="popup" id="epodDetailsPopup" style="display: none">
-      <h3>Electronic Proof of Delivery</h3>
+      <h2>Electronic Proof of Delivery</h2>
       <!-- Add a line space between h2 and the logo -->
       <br>
       <div class="logo-landbridge-container">
-        <img src="db-schenker-logo-main.png" alt="DB Schenker Logo" style="width: 150px;">
-        <h4>| landbridge</h4>
+        <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
+        <h3>| landbridge</h3>
       </div>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
