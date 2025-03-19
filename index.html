@@ -40,7 +40,7 @@
     /* Updated Navigation Buttons */
     button {
       width: 95%; /* Increased width */
-      padding: 20px; /* Increased padding for taller buttons */
+      padding: 18px; /* Increased padding for taller buttons */
       background-color: #fff;
       color: #333;
       border: none;
@@ -194,15 +194,16 @@
       text-align: left;
       margin-bottom: 15px; /* Reduced margin */
     }
-    /* Welcome popup logo size */
+    /* Welcome popup logo size 
     .popup-header img {
+      filter: none; /* Remove the filter */
       max-width: 200px; /* Smaller logo */
       height: auto;
       margin: 15px 0; /* Reduced margin */
-    }
+    }*/
     /* Main content logo */
     .logo {
-      width: 200px; /* Smaller logo */
+      width: 300px; /* Smaller logo */
       margin: 10px 0; /* Reduced margin */
     }
     /* Custom style for specific buttons */
@@ -282,8 +283,8 @@
       <!-- Add a line space between h2 and the logo -->
       <br>
       <div class="logo-landbridge-container">
-        <img src="db-schenker-logo.png" alt="DB Schenker Logo" style="width: 150px;">
-        <h3>| landbridge</h3>
+        <img src="db-schenker-logo-main.png" alt="DB Schenker Logo" style="width: 150px;">
+        <h4>| landbridge</h4>
       </div>
       <button onclick="showThankYouPopup()">Finish Experience</button>
     </div>
