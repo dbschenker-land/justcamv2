@@ -31,7 +31,7 @@
       max-width: 400px; /* Limit maximum width for better readability */
     }
     .logo {
-      width: 300px; /* Smaller logo */
+      width: 250px; /* Smaller logo */
       margin: 10px 0; /* Reduced margin */
     }
     h2, h3 {
@@ -194,7 +194,7 @@
     }
     /* Welcome popup logo size */
     .popup-header img {
-      max-width: 150px; /* Smaller logo */
+      max-width: 200px; /* Smaller logo */
       height: auto;
       margin: 15px 0; /* Reduced margin */
     }
@@ -226,7 +226,7 @@
     <div class="overlay" id="welcomeOverlay"></div>
     <div class="popup" id="welcomePopup">
       <div class="popup-header">
-      <img src="db-schenker-logo.png" alt="DB Schenker Logo" width="350" height="200">
+      <img src="db-schenker-logo.png" alt="DB Schenker Logo" width="300" height="150">
       </div>
       <h2>Join us for the digital experience</h2>
       <p>Scan QR codes at each station and unlock the final ePOD!</p>
@@ -403,7 +403,7 @@
             config,
             (decodedText, decodedResult) => {
               const isValid = decodedText === validQRCodes[buttonId];
-              document.getElementById('qrResult').textContent = isValid ? 'Match!' : 'No Match!';
+              document.getElementById('qrResult').textContent = isValid ? '' : 'No Match!';
               document.getElementById('qrResult').className = isValid ? '' : 'no-match';
               if (isValid) {
                 handleScanSuccess(buttonId);
@@ -433,7 +433,7 @@
 
       const resultElement = document.getElementById('qrResult');
       if (isValid) {
-        resultElement.textContent = 'Match!';
+        resultElement.textContent = '';
         resultElement.className = '';
         handleScanSuccess(currentButtonId);
         stopScanner(); // Close popup on success
