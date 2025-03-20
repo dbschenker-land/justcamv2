@@ -7,6 +7,13 @@
   <!-- Using html5-qrcode instead of qr-scanner -->
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
+    /* Ensure no scrollbar and fit to mobile screen */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Disable scrollbar */
+    }
     /* Overall Appearance */
     body {
       background-color: #167d86; /* Softer teal */
