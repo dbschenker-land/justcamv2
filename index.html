@@ -393,54 +393,60 @@
     // Add global variable to track current button ID
     let currentButtonId = null;
 
-    // Modified startScanner function to track button ID
-    async function startScanner(buttonId) {
-      currentButtonId = buttonId; // Store the current button ID
-      document.getElementById('qrPopup').style.display = 'block';
-      document.getElementById('qrOverlay').style.display = 'block';
+    // Modified startScanner function to track button ID, change to back camera
+async function startScanner(buttonId) {
+  currentButtonId = buttonId; // Store the current button ID
+  document.getElementById('qrPopup').style.display = 'block';
+  document.getElementById('qrOverlay').style.display = 'block';
 
-      html5QrCode = new Html5Qrcode("qrScanner");
-      const config = { fps: 10, qrbox: { width: 250, height: 250 } }; // Square QR box
+  html5QrCode = new Html5Qrcode("qrScanner");
+  const config = { fps: 10, qrbox: { width: 250, height: 250 } }; // Square QR box
 
-      try {
-        const cameras = await Html5Qrcode.getCameras();
-        if (cameras && cameras.length) {
-          // Find back camera (environment-facing)
-          let cameraId = cameras[0].id;
-          for (const cam of cameras) {
-            if (cam.label.toLowerCase().includes("back") ||
-              cam.label.toLowerCase().includes("environment")) {
-              cameraId = cam.id;
-              break;
-            }
-          }
-
-          await html5QrCode.start(
-            cameraId,
-            config,
-            (decodedText, decodedResult) => {
-              const isValid = decodedText === validQRCodes[buttonId];
-              document.getElementById('qrResult').textContent = isValid ? '' : 'No Match!';
-              document.getElementById('qrResult').className = isValid ? '' : 'no-match';
-              if (isValid) {
-                handleScanSuccess(buttonId);
-                stopScanner();
-              }
-            },
-            (errorMessage) => {
-              console.error(errorMessage);
-            }
-          );
-        } else {
-          console.error("No cameras found.");
-          alert("No cameras available. Please check your device camera.");
+  try {
+    const cameras = await Html5Qrcode.getCameras();
+    if (cameras && cameras.length) {
+      // Find the back camera (environment-facing)
+      let backCamera = null;
+      for (const camera of cameras) {
+        if (
+          camera.label.toLowerCase().includes("back") ||
+          camera.label.toLowerCase().includes("rear") ||
+          camera.label.toLowerCase().includes("environment")
+        ) {
+          backCamera = camera;
+          break;
         }
-      } catch (err) {
-        console.error(err);
-        alert("Camera access error: " + err.message);
-        stopScanner();
       }
+
+      // Use the back camera if found, otherwise fall back to the first camera
+      const cameraId = backCamera ? backCamera.id : cameras[0].id;
+
+      await html5QrCode.start(
+        cameraId,
+        config,
+        (decodedText, decodedResult) => {
+          const isValid = decodedText === validQRCodes[buttonId];
+          document.getElementById('qrResult').textContent = isValid ? '' : 'No Match!';
+          document.getElementById('qrResult').className = isValid ? '' : 'no-match';
+          if (isValid) {
+            handleScanSuccess(buttonId);
+            stopScanner();
+          }
+        },
+        (errorMessage) => {
+          console.error(errorMessage);
+        }
+      );
+    } else {
+      console.error("No cameras found.");
+      alert("No cameras available. Please check your device camera.");
     }
+  } catch (err) {
+    console.error(err);
+    alert("Camera access error: " + err.message);
+    stopScanner();
+  }
+}
 
     // New manual entry handler
     function handleManualEntry() {
